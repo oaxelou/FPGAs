@@ -15,11 +15,12 @@ wire [3:0] char;
 
 
 assign new_clk = clk;   // PROSWRINA
-assign reset_debounce = reset; //PROSWRINA
 
+debounce_circuit debounceINSTANCE(clk, reset, reset_debounce);
 
 fsm fsmINSTANCE(new_clk, reset_debounce, an3, an2, an1, an0, char);
-LEDdecoder LEDdecoderINSTANCE (char, LED);
+
+LEDdecoder LEDdecoderINSTANCE(char, LED);
 
 assign a = LED[6];
 assign b = LED[5];
