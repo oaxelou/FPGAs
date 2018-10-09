@@ -5,7 +5,7 @@ output an3, an2, an1, an0;
 output a, b, c, d, e, f, g, dp;
 
 wire new_clk, fb_output;
-wire reset_debounce;
+wire reset_synchr, reset_debounce;
 wire [6:0] LED;
 wire [3:0] char;
 /*
@@ -38,7 +38,7 @@ wire [3:0] char;
    //      Spartan-3
    // Xilinx HDL Language Template, version 14.7
 
-   DCM #(
+   /*DCM #(
       .SIM_MODE("SAFE"),  // Simulation: "SAFE" vs. "FAST", see "Synthesis and Simulation Design Guide" for details
       .CLKDV_DIVIDE(16), // Divide by: 1.5,2.0,2.5,3.0,3.5,4.0,4.5,5.0,5.5,6.0,6.5
                           //   7.0,7.5,8.0,9.0,10.0,11.0,12.0,13.0,14.0,15.0 or 16.0
@@ -62,15 +62,18 @@ wire [3:0] char;
       .CLKFB(fb_output),   // DCM clock feedback
       .CLKIN(clk),   // Clock input (from IBUFG, BUFG or DCM)
       .RST(reset)        // DCM asynchronous reset input
-   );
+   );*/
 
-//assign new_clk = clk;
+assign new_clk = clk;
 
-debounce_circuit debounceINSTANCE(new_clk, reset, reset_debounce);
+reset_synchronizer rst_synchr_inst(.clk(clk), .reset(reset), .new_reset(reset_synchr));
 
-fsm fsmINSTANCE(new_clk, reset_debounce, an3, an2, an1, an0, char);
+assign reset_debounce = reset_synchr; // aplo assign proswrino
+//debounce_circuit debounceINSTANCE(.clk(new_clk), .button(reset_synchr), .reset(reset_debounce));
 
-LEDdecoder LEDdecoderINSTANCE(char, LED);
+fsm fsmINSTANCE(.clk(new_clk), .reset(reset_debounce), .an3(an3), .an2(an2), .an1(an1), .an0(an0), .char(char));
+
+LEDdecoder LEDdecoderINSTANCE(.in(char), .LED(LED));
 
 assign a = LED[6];
 assign b = LED[5];
