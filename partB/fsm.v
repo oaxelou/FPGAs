@@ -25,14 +25,22 @@ parameter state15 = 4'b1111,
           state1  = 4'b0001,
           state0  = 4'b0000;
 
+/* 4bit counter as Fine Machine State.
+ * The setup time is 2 cycles. 
+ * For example, in order for the An3 to light up (1->0) at 1010
+ * we change the value at 1100.
+ */
 always @(posedge clk or posedge reset) begin
 	if(reset) begin
 		$display("resetting..");
-		counter = 4'b0000;
+		counter = 4'b1111;
+		
 		an3 = 1'b1;
 		an2 = 1'b1;
 		an1 = 1'b1;
 		an0 = 1'b1;
+
+		// [3:0] char doesn't change when an3-0 (0->1) because they are not used
 	end
 	else begin
 		$display("counter is going to change");
@@ -46,7 +54,7 @@ always @(posedge clk or posedge reset) begin
 			state13: counter = 4'b1100;
 			state12: begin 
 				counter = 4'b1011; 
-				an2 = 1'b0; 				// prwth h anathesh sto char wste na mhn parei allo char?
+				an2 = 1'b0;
 				char = 4'b0001; 
 			end 
 			state11: counter = 4'b1010;
@@ -82,8 +90,6 @@ always @(posedge clk or posedge reset) begin
 				an3 = 1'b0; 
 				char = 4'b0000; 
 			end
-			default: begin $display ("DEFAULT"); 
-                        counter = 4'b1111; end
 		endcase
 	end
 end
