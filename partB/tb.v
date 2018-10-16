@@ -25,7 +25,7 @@ module tb;
 	initial begin
 		clk = 1'b1;
 		//reset = 1'b1;
-		#10 reset = 1'b1;
+		#1000 reset = 1'b1;
 		#300 reset = 1'b0;
 		/*#280; // proswrina gia thn prosomoiwsh
 				// edw ksekinaei to roloi ths DCM (320ns)
@@ -49,7 +49,9 @@ module tb;
 		//#50 reset = ~reset;
 		//#1000 reset = 1'b1;
 		//#700 reset = 1'b0;
-		#200;
+		#1200 reset = 1'b1;
+		#1500 reset = 1'b0;
+		
 		//$finish;
 	end
 
