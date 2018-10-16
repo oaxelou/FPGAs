@@ -1,20 +1,40 @@
-module debounce_circuit(clk, button, reset);
-input clk, button;
-output reset;
-reg reset;
-reg FF1, FF2;
-wire enable;
+/* Axelou Olympia
+ * oaxelou@uth.gr 
+ * 2161
+ * 
+ * ce430
+ * Project1: 7-Segment display
+ *
+ * Part B: debounce circuit
+ * 
+ * LEDdecoder: input: synchronized reset signal
+ *	      output: debounce-checked reset signal
+ */
+ 
+module debounce_circuit
+	#(parameter SUFFICIENT_CYCLES = 5)
+	( clk, reset_synchr, reset_debounc);
+	input clk, reset_synchr;
+	output reset_debounc;	
+	reg reset_debounc;
 
-always @(clk or button) begin
-	FF1 <= button;
-	FF2 <= FF1;
-end
+	reg ff1;
+	reg ff2;
 
-assign enable = FF1 ~^ FF2;
+	integer counter;
 
-always @(clk or enable or FF1) begin  //to FF2 to xreiazetai?!
-	if(enable == 1'b1)
-		reset <= FF1;
-end
+	always @(posedge clk) begin
+		ff2 = ff1;
+		ff1 = reset_synchr;
+	
+		if(ff1 == ff2) begin
+		counter = counter + 1;
+		end
+		else
+			counter = 0;
+		
+		if(counter >= SUFFICIENT_CYCLES)
+			reset_debounc = ff1;
+	end
 
-endmodule 
+endmodule
