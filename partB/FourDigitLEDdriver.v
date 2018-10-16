@@ -1,44 +1,41 @@
+/* Axelou Olympia
+ * oaxelou@uth.gr 
+ * 2161
+ * 
+ * ce430
+ * Project1: 7-Segment display
+ *
+ * Part B: 
+ *
+ * FourDigitLEDdriver.v: TOP LEVEL MODULE
+ * 
+ * input : clk, reset
+ * output: the anodes and the segments to open.
+ */
+
 module FourDigitLEDdriver(reset, clk, an3, an2, an1, an0,
-a, b, c, d, e, f, g, dp);
-input clk, reset;
-output an3, an2, an1, an0;
-output a, b, c, d, e, f, g, dp;
+                          a, b, c, d, e, f, g, dp);
+	input clk, reset;
+	output an3, an2, an1, an0;
+	output a, b, c, d, e, f, g, dp;
 
-wire new_clk, fb_output;
-wire reset_synchr, reset_debounce;
-wire [6:0] LED;
-wire [3:0] char;
-/*
+	wire new_clk, fb_output;
+	wire reset_synchr, reset_debounce;
+
+	wire [6:0] LED;
+	wire [3:0] char;
+
+	reset_synchronizer rst_synchr_inst(.clk(clk), 
+												.reset(reset), 
+												.new_reset(reset_synchr));  
+
+	debounce_circuit #(.SUFFICIENT_CYCLES(10) 
+	/*I originally had 2cycles but with 320ns -> so 32cycles for 20ns*/
+							)debounceINSTANCE(.clk(clk), 
+													.reset_synchr(reset_synchr), 
+													.reset_debounc(reset_debounce));
+
    DCM #(
-      .CLKDV_DIVIDE(16.0), // Divide by: 1.5,2.0,2.5,3.0,3.5,4.0,4.5,5.0,5.5,6.0,6.5
-                          //   7.0,7.5,8.0,9.0,10.0,11.0,12.0,13.0,14.0,15.0 or 16.0
-      .CLK_FEEDBACK("1X"),  // Specify clock feedback of NONE, 1X or 2X
-      .DLL_FREQUENCY_MODE("LOW"),  // HIGH or LOW frequency mode for DLL
-      .PHASE_SHIFT(0)     // Amount of fixed phase shift from -255 to 255
-   ) DCM_inst (
-      .CLK0(new_clk),     // 0 degree DCM CLK output
-      .CLKFB(new_clk),   // DCM clock feedback
-      //.CLKDV(new_clk),   // Divided DCM CLK out (CLKDV_DIVIDE)
-		.CLKIN(clk),   // Clock input (from IBUFG, BUFG or DCM)
-      .RST(reset)        // DCM asynchronous reset input
-   );*/
-	
-
-//     DCM     : In order to incorporate this function into the design,
-//   Verilog   : the forllowing instance declaration needs to be placed
-//  instance   : in the body of the design code.  The instance name
-// declaration : (DCM_inst) and/or the port declarations within the
-//    code     : parenthesis may be changed to properly reference and
-//             : connect this function to the design.  Unused inputs
-//             : and outputs may be removed or commented out.
-
-//  <-----Cut code below this line---->
-
-   // DCM: Digital Clock Manager Circuit
-   //      Spartan-3
-   // Xilinx HDL Language Template, version 14.7
-
-   /*DCM #(
       .SIM_MODE("SAFE"),  // Simulation: "SAFE" vs. "FAST", see "Synthesis and Simulation Design Guide" for details
       .CLKDV_DIVIDE(16), // Divide by: 1.5,2.0,2.5,3.0,3.5,4.0,4.5,5.0,5.5,6.0,6.5
                           //   7.0,7.5,8.0,9.0,10.0,11.0,12.0,13.0,14.0,15.0 or 16.0
@@ -61,27 +58,28 @@ wire [3:0] char;
       .CLKDV(new_clk),   // Divided DCM CLK out (CLKDV_DIVIDE)
       .CLKFB(fb_output),   // DCM clock feedback
       .CLKIN(clk),   // Clock input (from IBUFG, BUFG or DCM)
-      .RST(reset)        // DCM asynchronous reset input
-   );*/
+      .RST(reset_debounce)        // DCM asynchronous reset input
+   ); 
 
-assign new_clk = clk;
+// PROSWRINA ASSIGNS (antikatastash DCM & debounce kuklwmatos)
+//assign new_clk = clk;
+//assign reset_debounce = reset_synchr;
 
-reset_synchronizer rst_synchr_inst(.clk(clk), .reset(reset), .new_reset(reset_synchr));
 
-assign reset_debounce = reset_synchr; // aplo assign proswrino
-//debounce_circuit debounceINSTANCE(.clk(new_clk), .button(reset_synchr), .reset(reset_debounce));
+	fsm fsmINSTANCE(.clk(new_clk), .reset(reset_debounce), 
+						.an3(an3), .an2(an2), .an1(an1), .an0(an0), 
+						.char(char));
 
-fsm fsmINSTANCE(.clk(new_clk), .reset(reset_debounce), .an3(an3), .an2(an2), .an1(an1), .an0(an0), .char(char));
+	LEDdecoder LEDdecoderINSTANCE(.in(char), .LED(LED));
 
-LEDdecoder LEDdecoderINSTANCE(.in(char), .LED(LED));
+	assign a = LED[6];
+	assign b = LED[5];
+	assign c = LED[4];
+	assign d = LED[3];
+	assign e = LED[2];
+	assign f = LED[1];
+	assign g = LED[0];
+	assign dp = 1'b1;
 
-assign a = LED[6];
-assign b = LED[5];
-assign c = LED[4];
-assign d = LED[3];
-assign e = LED[2];
-assign f = LED[1];
-assign g = LED[0];
-assign dp = 1'b0;
+endmodule
 
-endmodule
