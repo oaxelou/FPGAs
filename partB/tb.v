@@ -24,35 +24,11 @@ module tb;
 
 	initial begin
 		clk = 1'b1;
-		//reset = 1'b1;
-		#1000 reset = 1'b1;
+		reset = 1'b0;
+		#100 reset = 1'b1;
 		#300 reset = 1'b0;
-		/*#280; // proswrina gia thn prosomoiwsh
-				// edw ksekinaei to roloi ths DCM (320ns)
-		#660 reset = 1'b0; //#920 eimaste edw
-		#3160;
-		if(an3 == 1'b1 && an2 == 1'b0 && an1 == 1'b1 && an0 == 1'b1)
-			$display("PASS (anode)");
-		else
-			$display("FAIL (anode)");
-	
-		if(a == 1 && b == 0 && c == 0 &&
-			d == 1 && e == 1 && f == 1 && 
-			g == 1)
-			$display("PASS (char)");
-		else
-			$display("FAIL (char)");*/
-		//#100 reset = 1'b1;
-		//#100 reset = ~reset;
-		
-		//#800 reset = ~reset;
-		//#50 reset = ~reset;
-		//#1000 reset = 1'b1;
-		//#700 reset = 1'b0;
-		#1200 reset = 1'b1;
-		#1500 reset = 1'b0;
-		
-		//$finish;
+		#2000 reset = 1'b1;
+		#1000 reset = ~reset;
 	end
 
 	always begin

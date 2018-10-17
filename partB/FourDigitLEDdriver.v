@@ -66,7 +66,7 @@ module FourDigitLEDdriver(reset, clk, an3, an2, an1, an0,
 //assign reset_debounce = reset_synchr;
 
 
-	fsm fsmINSTANCE(.fpga_clk(clk), .clk(new_clk), .reset(reset_debounce),
+	fsm fsmINSTANCE(/*.fpga_clk(clk), */.clk(new_clk), .reset(reset_debounce),
 						.an3(an3), .an2(an2), .an1(an1), .an0(an0), .char(char));
 
 	LEDdecoder LEDdecoderINSTANCE(.in(char), .LED(LED));
