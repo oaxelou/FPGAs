@@ -13,15 +13,15 @@
  * output: the anodes and the segments to open.
  */
 
-module FourDigitLEDdriver(reset, nxt_button, clk, an3, an2, an1, an0,
+module FourDigitLEDdriver(reset, button, clk, an3, an2, an1, an0,
                           a, b, c, d, e, f, g, dp);
-	input clk, reset, nxt_button;
+	input clk, reset, button;
 	output an3, an2, an1, an0;
 	output a, b, c, d, e, f, g, dp;
 
 	wire new_clk, fb_output;
 	wire reset_synchr, reset_debounce;
-	wire nxt_button_synchr, nxt_button_deb;
+	wire button_synchr, button_deb;
 
 	wire [6:0] LED;
 	wire [3:0] char;
@@ -30,12 +30,12 @@ module FourDigitLEDdriver(reset, nxt_button, clk, an3, an2, an1, an0,
 												.reset(reset), 
 												.new_reset(reset_synchr));  
 
-	debounce_circuit #(.SUFFICIENT_CYCLES(10) 
-	/*I originally had 2cycles but with 320ns -> so 32cycles for 20ns*/
+	debounce_circuit #(.SUFFICIENT_CYCLES(2) 
+	//I originally had 2cycles but with 320ns -> so 32cycles for 20ns
 							)debounceINSTANCE(.clk(clk), 
-													.reset_synchr(reset_synchr), 
-													.reset_debounc(reset_debounce));
-
+													.button_input(reset_synchr), 
+													.button_output(reset_debounce));
+	//assign reset_debounce = reset;
    DCM #(
       .SIM_MODE("SAFE"),  // Simulation: "SAFE" vs. "FAST", see "Synthesis and Simulation Design Guide" for details
       .CLKDV_DIVIDE(16), // Divide by: 1.5,2.0,2.5,3.0,3.5,4.0,4.5,5.0,5.5,6.0,6.5
@@ -62,21 +62,19 @@ module FourDigitLEDdriver(reset, nxt_button, clk, an3, an2, an1, an0,
       .RST(reset_debounce)        // DCM asynchronous reset input
    ); 
 
-// PROSWRINA ASSIGNS (antikatastash DCM & debounce kuklwmatos)
-//assign new_clk = clk;
-//assign reset_debounce = reset_synchr;
-
-	reset_synchronizer nxt_button_synchr_inst(.clk(clk), 
-												.reset(nxt_button), 
-												.new_reset(nxt_button_synchr));  
+	reset_synchronizer button_synchr_inst(.clk(new_clk), 
+												.reset(button), 
+												.new_reset(button_synchr));  
 
 	debounce_circuit #(.SUFFICIENT_CYCLES(2) 
-							)nxt_button_debounce(.clk(new_clk), 
-													.reset_synchr(nxt_button_synchr), 
-													.reset_debounc(nxt_button_deb));
+							)button_debounce(.clk(new_clk), 
+													.button_input(button_synchr), 
+													.button_output(button_deb));
 
-	fsm fsmINSTANCE(.fpga_clk(clk), .clk(new_clk), 
-	                .reset(reset_debounce), .nxt_button(nxt_button_deb), 
+
+	//assign button_deb = button_synchr;
+	
+	fsm fsmINSTANCE(.clk(new_clk), .reset(reset_debounce), .button(button_deb), 
 						 .an3(an3), .an2(an2), .an1(an1), .an0(an0), .char(char));
 
 	LEDdecoder LEDdecoderINSTANCE(.in(char), .LED(LED));

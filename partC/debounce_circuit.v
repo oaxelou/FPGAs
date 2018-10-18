@@ -13,28 +13,35 @@
  
 module debounce_circuit
 	#(parameter SUFFICIENT_CYCLES = 5)
-	( clk, reset_synchr, reset_debounc);
-	input clk, reset_synchr;
-	output reset_debounc;	
-	reg reset_debounc;
+	( clk, button_input, button_output);
+	input clk, button_input;
+	output button_output;	
+	reg button_output;
 
 	reg ff1;
 	reg ff2;
 
-	integer counter;
+	reg [31:0] counter;
 
 	always @(posedge clk) begin
-		ff2 = ff1;
-		ff1 = reset_synchr;
-	
-		if(ff1 == ff2) begin
-		counter = counter + 1;
-		end
-		else
-			counter = 0;
+		//if(reset == 1'b1) begin
 		
-		if(counter >= SUFFICIENT_CYCLES)
-			reset_debounc = ff1;
+		//end
+		//else begin
+			ff2 = ff1;
+			ff1 = button_input;
+	
+			if((ff1 == 1'b1 && ff2 == 1'b1) || (ff1 == 1'b0 && ff2 == 1'b0)) begin
+				counter = counter + 1;
+			end
+			else
+				counter = 0'b0;
+		
+			if(counter >= SUFFICIENT_CYCLES) begin
+				button_output = ff1;
+				counter = 0'b0;
+			end
+		//end
 	end
 
 endmodule
