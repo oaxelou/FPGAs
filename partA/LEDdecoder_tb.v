@@ -12,9 +12,9 @@
  * LEDdecoder_testbench: tests LEDdecoder with the 16 possible inputs
  *                       and uses a counter for the correct outputs
  * For the 16 cases:
- * -> Waits 1ns
+ * -> Waits 100ns
  * -> Sets stdout and input
- * -> Waits 1ns
+ * -> Waits 100ns
  * -> displays time,in,out,stdout and checks output
  */
 
@@ -53,139 +53,139 @@ begin
 	stdout = char0;
 	in = 4'b0000;	
 
-	#1 $display("time = %t, in: %b, out: %b, stdout: %b, stdout and myout are the same: %b\n", $time, in, out, stdout, out == stdout);
+	#100 $display("time = %t, in: %b, out: %b, stdout: %b, stdout and myout are the same: %b\n", $time, in, out, stdout, out == stdout);
 	if(out == stdout)
 		correct_cases = correct_cases + 1;
 
 	// 2nd
-	#1 stdout = char1;
+	#100 stdout = char1;
 	in = in + 1;
 
-	#1 $display("time = %t, in: %b, out: %b, stdout and myout are the same: %b\n", $time, in, out, out == stdout);
+	#100 $display("time = %t, in: %b, out: %b, stdout and myout are the same: %b\n", $time, in, out, out == stdout);
 	if(out == stdout)
 		correct_cases = correct_cases + 1;
 
 	// 3rd
-	#1 stdout = char2;
+	#100 stdout = char2;
 	in = in + 1;
 	
-	#1 $display("time = %t, in: %b, out: %b, stdout and myout are the same: %b\n", $time, in, out, out == stdout);
+	#100 $display("time = %t, in: %b, out: %b, stdout and myout are the same: %b\n", $time, in, out, out == stdout);
 	if(out == stdout)
 		correct_cases = correct_cases + 1;
 
 	// 4th
-	#1 stdout = char3;
+	#100 stdout = char3;
 	in = in + 1;
 
-	#1 $display("time = %t, in: %b, out: %b, stdout and myout are the same: %b\n", $time, in, out, out == stdout);
+	#100 $display("time = %t, in: %b, out: %b, stdout and myout are the same: %b\n", $time, in, out, out == stdout);
 	if(out == stdout)
 		correct_cases = correct_cases + 1;
 
 	// 5th
-	#1 stdout = char4;
+	#100 stdout = char4;
 	in = in + 1;
 
-	#1 $display("time = %t, in: %b, out: %b, stdout and myout are the same: %b\n", $time, in, out, out == stdout);
+	#100 $display("time = %t, in: %b, out: %b, stdout and myout are the same: %b\n", $time, in, out, out == stdout);
 	if(out == stdout)
 		correct_cases = correct_cases + 1;
 
 	// 6th
-	#1 stdout = char5;
+	#100 stdout = char5;
 	in = in + 1;
 
-	#1 $display("time = %t, in: %b, out: %b, stdout and myout are the same: %b\n", $time, in, out, out == stdout);
+	#100 $display("time = %t, in: %b, out: %b, stdout and myout are the same: %b\n", $time, in, out, out == stdout);
 	if(out == stdout)
 		correct_cases = correct_cases + 1;
 
 	// 7th
-	#1 stdout = char6;
+	#100 stdout = char6;
 	in = in + 1;
 
-	#1 $display("time = %t, in: %b, out: %b, stdout and myout are the same: %b\n", $time, in, out, out == stdout);
+	#100 $display("time = %t, in: %b, out: %b, stdout and myout are the same: %b\n", $time, in, out, out == stdout);
 	if(out == stdout)
 		correct_cases = correct_cases + 1;
 
 	// 8th
-	#1 stdout = char7;
+	#100 stdout = char7;
 	in = in + 1;
 
-	#1 $display("time = %t, in: %b, out: %b, stdout and myout are the same: %b\n", $time, in, out, out == stdout);
+	#100 $display("time = %t, in: %b, out: %b, stdout and myout are the same: %b\n", $time, in, out, out == stdout);
 	if(out == stdout)
 		correct_cases = correct_cases + 1;
 
 	// 9th
-	#1 stdout = char8;
+	#100 stdout = char8;
 	in = in + 1;
 
-	#1 $display("time = %t, in: %b, out: %b, stdout and myout are the same: %b\n", $time, in, out, out == stdout);
+	#100 $display("time = %t, in: %b, out: %b, stdout and myout are the same: %b\n", $time, in, out, out == stdout);
 	if(out == stdout)
 		correct_cases = correct_cases + 1;
 
 
 	// 10th
-	#1 stdout = char9;
+	#100 stdout = char9;
 	in = in + 1;
 
-	#1 $display("time = %t, in: %b, out: %b, stdout and myout are the same: %b\n", $time, in, out, out == stdout);
+	#100 $display("time = %t, in: %b, out: %b, stdout and myout are the same: %b\n", $time, in, out, out == stdout);
 	if(out == stdout)
 		correct_cases = correct_cases + 1;
 
 
 	// 11th
-	#1 stdout = charA;
+	#100 stdout = charA;
 	in = in + 1;
 	
-	#1 $display("time = %t, in: %b, out: %b, stdout and myout are the same: %b\n", $time, in, out, out == stdout);
+	#100 $display("time = %t, in: %b, out: %b, stdout and myout are the same: %b\n", $time, in, out, out == stdout);
 	if(out == stdout)
 		correct_cases = correct_cases + 1;
 
 
 	// 12th
-	#1 stdout = charB;
+	#100 stdout = charB;
 	in = in + 1;
 
-	#1 $display("time = %t, in: %b, out: %b, stdout and myout are the same: %b\n", $time, in, out, out == stdout);
+	#100 $display("time = %t, in: %b, out: %b, stdout and myout are the same: %b\n", $time, in, out, out == stdout);
 	if(out == stdout)
 		correct_cases = correct_cases + 1;
 
 
 	// 13th
-	#1 stdout = charC;
+	#100 stdout = charC;
 	in = in + 1;
 
-	#1 $display("time = %t, in: %b, out: %b, stdout and myout are the same: %b\n", $time, in, out, out == stdout);
+	#100 $display("time = %t, in: %b, out: %b, stdout and myout are the same: %b\n", $time, in, out, out == stdout);
 	if(out == stdout)
 		correct_cases = correct_cases + 1;
 
 
 	// 14th
-	#1 stdout = charD;
+	#100 stdout = charD;
 	in = in + 1;
 
-	#1 $display("time = %t, in: %b, out: %b, stdout and myout are the same: %b\n", $time, in, out, out == stdout);
+	#100 $display("time = %t, in: %b, out: %b, stdout and myout are the same: %b\n", $time, in, out, out == stdout);
 	if(out == stdout)
 		correct_cases = correct_cases + 1;
 
 
 	// 15th
-	#1 stdout = charE;
+	#100 stdout = charE;
 	in = in + 1;
 
-	#1 $display("time = %t, in: %b, out: %b, stdout and myout are the same: %b\n", $time, in, out, out == stdout);
+	#100 $display("time = %t, in: %b, out: %b, stdout and myout are the same: %b\n", $time, in, out, out == stdout);
 	if(out == stdout)
 		correct_cases = correct_cases + 1;
 
 
 	// 16th
-	#1 stdout = charF;
+	#100 stdout = charF;
 	in = in + 1;
 
-	#1 $display("time = %t, in: %b, out: %b, stdout and myout are the same: %b\n", $time, in, out, out == stdout);
+	#100 $display("time = %t, in: %b, out: %b, stdout and myout are the same: %b\n", $time, in, out, out == stdout);
 	if(out == stdout)
 		correct_cases = correct_cases + 1;
 
 
-	#1 $display("Correct answers: %d / 16\n", correct_cases);
+	#100 $display("Correct answers: %d / 16\n", correct_cases);
 end
 
 endmodule
