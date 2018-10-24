@@ -1,4 +1,4 @@
-`timescale 1ns/1ns
+`timescale 1ns/10ps
 
 /* Axelou Olympia
  * oaxelou@uth.gr 
@@ -7,11 +7,14 @@
  * ce430
  * Project1: 7-Segment display
  *
- * Part B: 
- *
+ * Part C: button triggered 16-char message display (circular)
+ * (the same file as of part B)  
+ * 
  * tb.v: the testbench of the partB circuit
  * 
- * 
+ * Tests the button: 
+ * 1) It sends 2 signals with bouncing at posedge and at negedge
+ * 2) then sends 2 signals with no bouncing
  */
 
 module tb;
@@ -25,115 +28,65 @@ module tb;
 
 	initial begin
 		clk = 1'b1;
-		//reset = 1'b1;
-		#100 reset = 1'b1;
-		#1000 reset = 1'b0;
 		button = 1'b0;
 		
-		#20000 button = 1'b1;
-		#10000 button = 1'b0;
+		#100 reset = 1'b1;
+		#5 reset = 1'b0;
+		#15 reset = 1'b1;
+		#5 reset = 1'b0;
+		#5 reset = 1'b1;
+		#15 reset = 1'b0;
+		#5 reset = 1'b1;
+		#1000 reset = 1'b0;
+		#5 reset = 1'b1;
+		#15 reset = 1'b0;
+		#5 reset = 1'b1;
+		#25 reset = 1'b0;
+		#5 reset = 1'b1;
+		#5 reset = 1'b0;
 		
-		#20000 button = 1'b1;
-		#10000 button = 1'b0;
-		
-		#20000 button = 1'b1;
-		#10000 button = 1'b0;
-		
-		#20000 button = 1'b1;
-		#10000 button = 1'b0;
-		////////////////////
-		
-		#20000 button = 1'b1;
-		#10000 button = 1'b0;
-		
-		#20000 button = 1'b1;
-		#10000 button = 1'b0;
-		
-		#20000 button = 1'b1;
-		#10000 button = 1'b0;
-		
-		#20000 button = 1'b1;
-		#10000 button = 1'b0;
-		////////////////////
-		
-		#20000 button = 1'b1;
-		#10000 button = 1'b0;
-		
-		#20000 button = 1'b1;
-		#10000 button = 1'b0;
-		
-		#20000 button = 1'b1;
-		#10000 button = 1'b0;
-		
-		#20000 button = 1'b1;
-		#10000 button = 1'b0;
-		////////////////////
-		
-		#20000 button = 1'b1;
-		#10000 button = 1'b0;
-		
-		#20000 button = 1'b1;
-		#10000 button = 1'b0;
-		
-		#20000 button = 1'b1;
-		#10000 button = 1'b0;
-		
-		#20000 button = 1'b1;
-		#10000 button = 1'b0;
-		
-		//#1000 reset = 1'b1;
-		//#1000 reset = 1'b0;
-		
-		//#100 reset = 1'b1;
-		//#100 reset = ~reset;
-		
-		//#800 reset = ~reset;
-		//#50 reset = ~reset;
-		//#1000 reset = 1'b1;
-		//#700 reset = 1'b0;
-		
-		//#1210 reset = 1'b1;
-		//#1500 reset = 1'b0;
-		
-		$display("going to push the next button in 1000ns!\n"); //4000
-		//#10000 button = 1'b1;
-		//#2000 button = 1'b0;
-		/*$display ("button released!\n");
-		$display("going to push the next button in 1000ns!\n"); //4000
-		#1000 button = 1'b1;
-		#2000 button = 1'b0;
-		$display ("button released!\n");
-		$display("going to push the next button in 1000ns!\n"); //4000
-		#1000 button = 1'b1;
-		#2000 button = 1'b0;
-		$display ("button released!\n");
-		$display("going to push the next button in 1000ns!\n"); //4000
-		#1000 button = 1'b1;
-		#2000 button = 1'b0;
-		$display ("button released!\n");
-		$display("going to push the next button in 1000ns!\n"); //4000
-		#1000 button = 1'b1;
-		#2000 button = 1'b0;
-		$display ("button released!\n");
-		
-		#1000;
-		
-		#10 button = 1'b1;
-		#10 button = 1'b0;
-		#10 button = 1'b1;
-		#10 button = 1'b0;
-		#10 button = 1'b1;
-		#10 button = 1'b0;
-		#10 button = 1'b1;
-		#10 button = 1'b0;   // 4 talantwseis
-		
-		#10 button = 1'b1;
+		// 1st button press
+		#2000 button = 1'b1;
+		#5 button = 1'b0;
+		#15 button = 1'b1;
+		#5 button = 1'b0;
+		#5 button = 1'b1;
+		#5 button = 1'b0;
+		#5 button = 1'b1;
 		
 		#1000 button = 1'b0;
-		#10 button = 1'b1;
-		#10 button = 1'b0;
-		#10 button = 1'b1;
-		#10 button = 1'b0;*/  // statheropoihsh sto 0 meta apo 2 talantwseis
+		#15 button = 1'b1;
+		#5 button = 1'b0;
+		#5 button = 1'b1;
+		#5 button = 1'b0;
+		#5 button = 1'b1;
+		#15 button = 1'b0;
+		
+		// 2nd button press
+		#5200 button = 1'b1;
+		#5 button = 1'b0;
+		#15 button = 1'b1;
+		#5 button = 1'b0;
+		#5 button = 1'b1;
+		#5 button = 1'b0;
+		#5 button = 1'b1;
+		
+		#1000 button = 1'b0;
+		#15 button = 1'b1;
+		#5 button = 1'b0;
+		#5 button = 1'b1;
+		#5 button = 1'b0;
+		#5 button = 1'b1;
+		#15 button = 1'b0;
+	
+		
+		// 3rd button press
+		#5200 button = 1'b1;
+		#1000 button = 1'b0;
+		
+		// 4th button press
+		#52000 button = 1'b1;
+		#10000 button = 1'b0;
 	end
 
 	always begin

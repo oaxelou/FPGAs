@@ -1,135 +1,170 @@
+/* Axelou Olympia
+ * oaxelou@uth.gr 
+ * 2161
+ * 
+ * ce430
+ * Project1: 7-Segment display
+ *
+ * Part C: button triggered message display (circular)
+ * 
+ * fsm: chooses which anode is down and the character to display
+ *  
+ * input: the signals clk, reset and button
+ * output: the anode and the char
+ *
+ * Implementation: 
+ * 
+ *                                            FLOW TABLE
+ * 
+ *     STATES     |        I   N   P   U   T   S         |       O  U  T  P  U  T  S
+ *                |                                      |
+ *  state/counter |  reset  |  reset' [button | button'] | an3 | an2 | an1 | an0 ||      char
+ *  --------------|---------|-----------------|----------|-----|-----|-----|-----||------------------
+ *   init_state   | init_st | 15/1111 [  0    |    0   ] |  x  |  x  |  x  |  x  ||       x  
+ *     15/1111    | init_st | 14/1110 [index  | index+1] |  0  |  1  |  1  |  1  || message[index  ]
+ *     14/1110    | init_st | 13/1101 [index  | index+1] |  1  |  1  |  1  |  1  || message[index  ]
+ *     12/1100    | init_st | 11/1011 [index  | index+1] |  1  |  1  |  1  |  1  || message[index+1] 
+ *     11/1011    | init_st | 10/1010 [index  | index+1] |  1  |  0  |  1  |  1  || message[index+1] 
+ *     10/1010    | init_st |  9/1001 [index  | index+1] |  1  |  1  |  1  |  1  || message[index+1] 
+ *      8/1000    | init_st |  7/0111 [index  | index+1] |  1  |  1  |  1  |  1  || message[index+2] 
+ *      7/0111    | init_st |  6/0110 [index  | index+1] |  1  |  1  |  0  |  1  || message[index+2] 
+ *      6/0110    | init_st |  5/0101 [index  | index+1] |  1  |  1  |  1  |  1  || message[index+2]  
+ *      4/0100    | init_st |  3/0011 [index  | index+1] |  1  |  1  |  1  |  1  || message[index+3] 
+ *      3/0011    | init_st |  2/0010 [index  | index+1] |  1  |  1  |  1  |  0  || message[index+3]
+ *      2/0010    | init_st |  1/0001 [index  | index+1] |  1  |  1  |  1  |  1  || message[index+3]  
+ *      0/0000    | init_st | 15/1111 [index  | index+1] |  1  |  1  |  1  |  1  || message[index  ] 
+ *     default    | init_st | state-1 [index  |  index ] |  x  |  x  |  x  |  x  ||       x  <-
+ *                                                                                            | 
+ *                                                                     The x values here mean that we don't
+ *                                                                       care about the current value
+ * How to read the table:
+ * The reset & reset' columns show the next state.
+ * The button & button' columns show the next value of the register index
+ * The outputs columns show the current values of the regs.
+ */
+
 module fsm(clk, reset, button, an3, an2, an1, an0, char);
-input clk, reset, button;
-output an3, an2, an1, an0;
-output [3:0] char;
+	input clk, reset, button;
+	output an3, an2, an1, an0;
+	output [3:0] char;
 
-reg [3:0] counter;
-reg an3, an2, an1, an0;
-reg [3:0] char;
-reg button_old;
-reg [3:0] message_index;
+	reg an3, an2, an1, an0;
+	reg [3:0] char;
+	reg [3:0] counter;
+	
+	reg button_old;
+	reg [3:0] index;
+	reg [3:0] message [0:15];		 
 
-reg [3:0] message [0:15];
-
-parameter state15 = 4'b1111,
-          state14 = 4'b1110,
-          state13 = 4'b1101,
-          state12 = 4'b1100,
-          state11 = 4'b1011,
-          state10 = 4'b1010,
-          state9  = 4'b1001,
-          state8  = 4'b1000,
-          state7  = 4'b0111,
-          state6  = 4'b0110,
-          state5  = 4'b0101,
-          state4  = 4'b0100,
-          state3  = 4'b0011,
-          state2  = 4'b0010,
-          state1  = 4'b0001,
-          state0  = 4'b0000;
-			 
-
-always @(posedge clk or posedge reset) begin
-	if(reset) begin
-		$display("resetting..");
-		counter = 4'b1111;
-		message_index = 4'b0000;
-		button_old = 1'b0;
-		char = message[0];
+always @(posedge clk or posedge reset) 
+	begin
+		if(reset) 
+		begin
+			counter = 4'b1111;
+			index = 4'b0000;
+			button_old = 1'b0;
 		
-		an3 = 1'b1; 
-		an2 = 1'b1;
-		an1 = 1'b1;
-		an0 = 1'b1;
-		
-		message[0]  = 4'b0000; 
-		message[1]  = 4'b0001;
-		message[2]  = 4'b0010;
-		message[3]  = 4'b0011;
+			message[0]  = 4'b0000; 
+			message[1]  = 4'b0001;
+			message[2]  = 4'b0010;
+			message[3]  = 4'b0011;
 
-		message[4]  = 4'b0100; 
-		message[5]  = 4'b0101;
-		message[6]  = 4'b0110;
-		message[7]  = 4'b0111;
+			message[4]  = 4'b0100; 
+			message[5]  = 4'b0101;
+			message[6]  = 4'b0110;
+			message[7]  = 4'b0111;
 
-		message[8]  = 4'b1000; 
-		message[9]  = 4'b1001;
-		message[10] = 4'b1010;
-		message[11] = 4'b1011;
-
-		message[12] = 4'b1100; 
-		message[13] = 4'b1101;
-		message[14] = 4'b1110;
-		message[15] = 4'b1111; 
+			message[8]  = 4'b1000; 
+			message[9]  = 4'b1001;
+			message[10] = 4'b1010;
+			message[11] = 4'b1011;
+	
+			message[12] = 4'b1100; 
+			message[13] = 4'b1101;
+			message[14] = 4'b1110;
+			message[15] = 4'b1111; 
 		
-	end
-	else begin
-		//$display("counter is going to change");
+			an3 = 1'b0; 
+			an2 = 1'b1;
+			an1 = 1'b1;
+			an0 = 1'b1;
 		
-		if(button_old == 1'b1 && button == 1'b0) begin
-			$display("message_index going to be added!\n");
-			message_index = message_index + 1;
+			char = message[0];
 		end
-		button_old = button;
+		else 
+		begin
+			if(button_old == 1'b0 && button == 1'b1)
+				index = index + 1;
+
+			if(button == 1'b0 || button == 1'b1)
+				button_old = button;
 		
-		case(counter)
-			state15: begin
-				an3 = 1'b1;
-				counter = counter - 1;
-			end
-			state14: begin
-				counter = counter - 1;
-				char = message[message_index + 1];
-			end
-			//state13: counter = 4'b1100;
-			state12: begin 
-				counter = counter - 1;
-				an2 = 1'b0; 				// prwth h anathesh sto char wste na mhn parei allo char? 
-			end 
-			state11: begin 
-				counter = counter - 1;
-				an2 = 1'b1; 
-			end	
-			state10: begin
-				counter = counter - 1;
-				char = message[message_index + 2]; 
-			end
-			//state9 : counter = 4'b1000;
-			state8 : begin 
-				counter = counter - 1;
-				an1 = 1'b0; 
-			end 
-			state7 : begin
-				counter = counter - 1;
-				an1 = 1'b1;
-			end
-			state6 : begin
-				counter = counter - 1;
-				char = message[message_index + 3];
-			end
-			//state5 : counter = 4'b0100;
-			state4 : begin 
-				counter = counter - 1;
-				an0 = 1'b0; 
-			end 
-			state3 : begin
-				counter = counter - 1;
-				an0 = 1'b1;
-			end
-			state2 : begin
-				counter = counter - 1;
-				char = message[message_index];
-			end
-			//state1 : counter = 4'b0000;
-			state0 : begin 
-				counter = counter - 1;
-				an3 = 1'b0; 
-			end
-			default: begin 
-				//$display ("DEFAULT"); 
-				counter = counter - 1;
-			end
-		endcase
+			case(counter)
+				4'b1111: 
+				begin
+					counter = counter - 1;
+					an3 = 1'b1;
+				end
+				4'b1110: 
+				begin
+					counter = counter - 1;
+					char = message[index + 1];
+				end
+				4'b1100: 
+				begin 
+					counter = counter - 1;
+					an2 = 1'b0; 			
+				end 
+				4'b1011: 
+				begin 
+					counter = counter - 1;
+					an2 = 1'b1; 
+				end	
+				4'b1010: 
+				begin
+					counter = counter - 1;
+					char = message[index + 2]; 
+				end
+				4'b1000: 
+				begin 
+					counter = counter - 1;
+					an1 = 1'b0; 
+				end 
+				4'b0111: 
+				begin
+					counter = counter - 1;
+					an1 = 1'b1;
+				end
+				4'b0110: 
+				begin
+					counter = counter - 1;
+					char = message[index + 3];
+				end
+				4'b0100: 
+				begin 
+					counter = counter - 1;
+					an0 = 1'b0; 
+				end 
+				4'b0011: 
+				begin
+					counter = counter - 1;
+					an0 = 1'b1;
+				end
+				4'b0010: 
+				begin
+					counter = counter - 1;
+					char = message[index];
+				end
+				4'b0000: 
+				begin 
+					counter = counter - 1;
+					an3 = 1'b0; 
+				end
+				default: 
+				begin 
+					counter = counter - 1;
+				end
+			endcase
+		end
 	end
-end
-endmodule 
+endmodule
