@@ -34,7 +34,11 @@
  *      3/0011    | init_st |  2/0010 |  1  |  1  |  1  |  0  ||  1   
  *      2/0010    | init_st |  1/0001 |  1  |  1  |  1  |  1  ||  1  
  *      0/0000    | init_st | 15/1111 |  1  |  1  |  1  |  1  ||  2 
- *     default    | init_st | state-1 |  x  |  x  |  x  |  x  ||  x  
+ *     default    | init_st | state-1 |  x  |  x  |  x  |  x  ||  x  <- the x value here means that we 
+ *                                                                   don't care about the current value
+ * How to read the table:
+ * The reset & reset' columns show the next state.
+ * The outputs columns show the current values of the regs.
  */
 
 module fsm(clk, reset, an3, an2, an1, an0, char);
