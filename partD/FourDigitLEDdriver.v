@@ -14,12 +14,15 @@
  *
  * Implementation: 
  * 1)It connects reset with the synchronizer circuit and then 
- * with the anti-bouncer circuit. (using the old clk - 20ns).
+ *  with the anti-bouncer circuit. (using the old clk - 20ns).
+ *  Comment: Since there isn't a problem if reset is pressed too many
+ *   times - as it ends up at init_state(check fsm.v flow table) no matter
+ *   where we are - the parameter for the anti-bounce circuit is only 2 (->40ns).
  * 2)It drives the old clk to DCM circuit for the new clk (320ns).
  * 3)It connects theses 2 input signals to the fsm circuit which 
- * decides which characters are to display and the anode.
+ *  decides which characters are to display and the anode.
  * 4)Then drives the characters to the LEDdecoder to match them with
- * the segments to open. 
+ *  the segments to open. 
  */
 
 
@@ -35,12 +38,12 @@ module FourDigitLEDdriver(reset, clk, an3, an2, an1, an0,
 	wire [6:0] LED;
 	wire [3:0] char;
 
-	reset_synchronizer rst_synchr_inst(.clk(clk), 
+	reset_synchronizer rst_synchrINSTANCE(.clk(clk), 
 												.reset(reset), 
 												.new_reset(reset_synchr));  
 
 	debounce_circuit #(.SUFFICIENT_CYCLES(10) // 10 cycles of 20ns
-							)debounceINSTANCE(.clk(clk), 
+							)rst_debounceINSTANCE(.clk(clk), 
 													.button_input(reset_synchr), 
 													.button_output(reset_debounce));
 	

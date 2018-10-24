@@ -50,10 +50,13 @@ module debounce_circuit
 
 	reg [31:0] counter;
 
-	always @(posedge clk) begin
+	always @(posedge clk)
 		ff2 = ff1;
+
+	always @(posedge clk)
 		ff1 = button_input;
 	
+	always @(posedge clk) begin
 		if((ff1 == 1'b1 && ff2 == 1'b1) || (ff1 == 1'b0 && ff2 == 1'b0)) 
 		counter = counter + 1;
 		else
