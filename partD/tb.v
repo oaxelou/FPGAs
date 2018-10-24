@@ -1,4 +1,4 @@
-`timescale 1ns/1ns
+`timescale 1ns/10ps
 
 /* Axelou Olympia
  * oaxelou@uth.gr 
@@ -7,11 +7,13 @@
  * ce430
  * Project1: 7-Segment display
  *
- * Part B: 
- *
+ * Part D: 16-char message display circular with a timer
+ * 
  * tb.v: the testbench of the partB circuit
- * 
- * 
+ *  
+ * Tests the index_counter in fsm: 
+ * It sends 2 reset signals with bouncing at posedge and at negedge
+ * to test if at reset == 1 the initialization of the counter is ok
  */
 
 module tb;
@@ -24,63 +26,39 @@ module tb;
 
 	initial begin
 		clk = 1'b1;
-		//reset = 1'b1;
+
 		#100 reset = 1'b1;
+		#5 reset = 1'b0;
+		#15 reset = 1'b1;
+		#5 reset = 1'b0;
+		#5 reset = 1'b1;
+		#15 reset = 1'b0;
+		#5 reset = 1'b1;
 		#1000 reset = 1'b0;
+		#5 reset = 1'b1;
+		#15 reset = 1'b0;
+		#5 reset = 1'b1;
+		#25 reset = 1'b0;
+		#5 reset = 1'b1;
+		#5 reset = 1'b0;
 		
-		//#1000 reset = 1'b1;
-		//#1000 reset = 1'b0;
+		#100000;
 		
-		//#100 reset = 1'b1;
-		//#100 reset = ~reset;
 		
-		//#800 reset = ~reset;
-		//#50 reset = ~reset;
-		//#1000 reset = 1'b1;
-		//#700 reset = 1'b0;
-		
-		//#1210 reset = 1'b1;
-		//#1500 reset = 1'b0;
-		
-		$display("going to push the next button in 1000ns!\n"); //4000
-		//#10000 button = 1'b1;
-		//#2000 button = 1'b0;
-		/*$display ("button released!\n");
-		$display("going to push the next button in 1000ns!\n"); //4000
-		#1000 button = 1'b1;
-		#2000 button = 1'b0;
-		$display ("button released!\n");
-		$display("going to push the next button in 1000ns!\n"); //4000
-		#1000 button = 1'b1;
-		#2000 button = 1'b0;
-		$display ("button released!\n");
-		$display("going to push the next button in 1000ns!\n"); //4000
-		#1000 button = 1'b1;
-		#2000 button = 1'b0;
-		$display ("button released!\n");
-		$display("going to push the next button in 1000ns!\n"); //4000
-		#1000 button = 1'b1;
-		#2000 button = 1'b0;
-		$display ("button released!\n");
-		
-		#1000;
-		
-		#10 button = 1'b1;
-		#10 button = 1'b0;
-		#10 button = 1'b1;
-		#10 button = 1'b0;
-		#10 button = 1'b1;
-		#10 button = 1'b0;
-		#10 button = 1'b1;
-		#10 button = 1'b0;   // 4 talantwseis
-		
-		#10 button = 1'b1;
-		
-		#1000 button = 1'b0;
-		#10 button = 1'b1;
-		#10 button = 1'b0;
-		#10 button = 1'b1;
-		#10 button = 1'b0;*/  // statheropoihsh sto 0 meta apo 2 talantwseis
+		#100 reset = 1'b1;
+		#5 reset = 1'b0;
+		#15 reset = 1'b1;
+		#5 reset = 1'b0;
+		#5 reset = 1'b1;
+		#15 reset = 1'b0;
+		#5 reset = 1'b1;
+		#1000 reset = 1'b0;
+		#5 reset = 1'b1;
+		#15 reset = 1'b0;
+		#5 reset = 1'b1;
+		#25 reset = 1'b0;
+		#5 reset = 1'b1;
+		#5 reset = 1'b0;
 	end
 
 	always begin
