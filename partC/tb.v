@@ -37,7 +37,7 @@ module tb;
 		#5 reset = 1'b1;
 		#15 reset = 1'b0;
 		#5 reset = 1'b1;
-		#1000 reset = 1'b0;
+		#5000 reset = 1'b0;
 		#5 reset = 1'b1;
 		#15 reset = 1'b0;
 		#5 reset = 1'b1;
@@ -46,7 +46,7 @@ module tb;
 		#5 reset = 1'b0;
 		
 		// 1st button press
-		#2000 button = 1'b1;
+		#5000 button = 1'b1;
 		#5 button = 1'b0;
 		#15 button = 1'b1;
 		#5 button = 1'b0;
@@ -54,7 +54,7 @@ module tb;
 		#5 button = 1'b0;
 		#5 button = 1'b1;
 		
-		#1000 button = 1'b0;
+		#5000 button = 1'b0;
 		#15 button = 1'b1;
 		#5 button = 1'b0;
 		#5 button = 1'b1;
@@ -71,7 +71,7 @@ module tb;
 		#5 button = 1'b0;
 		#5 button = 1'b1;
 		
-		#1000 button = 1'b0;
+		#5000 button = 1'b0;
 		#15 button = 1'b1;
 		#5 button = 1'b0;
 		#5 button = 1'b1;
@@ -82,11 +82,75 @@ module tb;
 		
 		// 3rd button press
 		#5200 button = 1'b1;
-		#1000 button = 1'b0;
+		#5000 button = 1'b0;
 		
 		// 4th button press
-		#52000 button = 1'b1;
-		#10000 button = 1'b0;
+		#5200 button = 1'b1;
+		#5000 button = 1'b0;
+		
+		// 5th button press
+		#5200 button = 1'b1;
+		#5000 button = 1'b0;
+		
+		// 6th button press
+		#5200 button = 1'b1;
+		#5000 button = 1'b0;
+		
+		// 7th button press
+		#5200 button = 1'b1;
+		#5000 button = 1'b0;
+		
+		// 8th button press
+		#5200 button = 1'b1;
+		#5000 button = 1'b0;
+		
+		// 9th button press
+		#5200 button = 1'b1;
+		#5000 button = 1'b0;
+		
+		// 10th button press
+		#5200 button = 1'b1;
+		#5000 button = 1'b0;
+		
+		// 11th button press
+		#5200 button = 1'b1;
+		#5000 button = 1'b0;
+		
+		// 12th button press
+		#5200 button = 1'b1;
+		#5000 button = 1'b0;
+		
+		// 13th button press
+		#5200 button = 1'b1;
+		#5000 button = 1'b0;
+		
+		// 14th button press
+		#5200 button = 1'b1;
+		#5000 button = 1'b0;
+		
+		// 15th button press
+		#5200 button = 1'b1;
+		#5000 button = 1'b0;
+		
+		// 16th button press
+		#5200 button = 1'b1;
+		#5000 button = 1'b0;
+		
+		// 17th button press
+		#5200 button = 1'b1;
+		#5000 button = 1'b0;
+		
+		// 18th button press
+		#5200 button = 1'b1;
+		#5000 button = 1'b0;
+		
+		// 19th button press
+		#5200 button = 1'b1;
+		#5000 button = 1'b0;
+		
+		// 20th button press
+		#5200 button = 1'b1;
+		#5000 button = 1'b0;
 	end
 
 	always begin

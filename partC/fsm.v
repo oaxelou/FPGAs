@@ -20,7 +20,7 @@
  *                |                                      |
  *  state/counter |  reset  |  reset' [button | button'] | an3 | an2 | an1 | an0 ||      char
  *  --------------|---------|-----------------|----------|-----|-----|-----|-----||------------------
- *   init_state   | init_st | 15/1111 [  0    |    0   ] |  x  |  x  |  x  |  x  ||       x  
+ *   init_state   | init_st |  0/0000 [  0    |    0   ] |  x  |  x  |  x  |  x  ||       x  
  *     15/1111    | init_st | 14/1110 [index  | index+1] |  0  |  1  |  1  |  1  || message[index  ]
  *     14/1110    | init_st | 13/1101 [index  | index+1] |  1  |  1  |  1  |  1  || message[index  ]
  *     12/1100    | init_st | 11/1011 [index  | index+1] |  1  |  1  |  1  |  1  || message[index+1] 
@@ -53,16 +53,47 @@ module fsm(clk, reset, button, an3, an2, an1, an0, char);
 	reg [3:0] counter;
 	
 	reg button_old;
-	reg [3:0] index;
+	reg [4:0] index;
+	reg [4:0] index_an3, index_an2, index_an1, index_an0;
 	reg [3:0] message [0:15];		 
+
+always @(posedge clk or posedge reset)
+begin
+	if(reset)
+	begin
+		button_old = 1'b0;
+		
+		index = 5'b0000;
+		index_an3 = index;
+		index_an2 = index + 1;
+		index_an1 = index + 2;
+		index_an0 = index + 3;
+	end
+	else
+	begin
+		if(button_old == 1'b0 && button == 1'b1)
+		begin
+			index = index + 1;
+			
+			if(index[4])
+				index[4] = 1'b0;
+				
+			index_an3 = index;
+			index_an2 = index + 1;
+			index_an1 = index + 2;
+			index_an0 = index + 3;
+		end
+
+		if(button == 1'b0 || button == 1'b1)
+			button_old = button;
+	end
+end
 
 always @(posedge clk or posedge reset) 
 	begin
 		if(reset) 
 		begin
-			counter = 4'b1111;
-			index = 4'b0000;
-			button_old = 1'b0;
+			counter = 4'b0000;
 		
 			message[0]  = 4'b0000; 
 			message[1]  = 4'b0001;
@@ -84,7 +115,7 @@ always @(posedge clk or posedge reset)
 			message[14] = 4'b1110;
 			message[15] = 4'b1111; 
 		
-			an3 = 1'b0; 
+			an3 = 1'b1; 
 			an2 = 1'b1;
 			an1 = 1'b1;
 			an0 = 1'b1;
@@ -93,12 +124,6 @@ always @(posedge clk or posedge reset)
 		end
 		else 
 		begin
-			if(button_old == 1'b0 && button == 1'b1)
-				index = index + 1;
-
-			if(button == 1'b0 || button == 1'b1)
-				button_old = button;
-		
 			case(counter)
 				4'b1111: 
 				begin
@@ -108,7 +133,7 @@ always @(posedge clk or posedge reset)
 				4'b1110: 
 				begin
 					counter = counter - 1;
-					char = message[index + 1];
+					char = message[index_an2[3:0]];
 				end
 				4'b1100: 
 				begin 
@@ -123,7 +148,7 @@ always @(posedge clk or posedge reset)
 				4'b1010: 
 				begin
 					counter = counter - 1;
-					char = message[index + 2]; 
+					char = message[index_an1[3:0]]; 
 				end
 				4'b1000: 
 				begin 
@@ -138,7 +163,7 @@ always @(posedge clk or posedge reset)
 				4'b0110: 
 				begin
 					counter = counter - 1;
-					char = message[index + 3];
+					char = message[index_an0[3:0]];
 				end
 				4'b0100: 
 				begin 
@@ -153,7 +178,7 @@ always @(posedge clk or posedge reset)
 				4'b0010: 
 				begin
 					counter = counter - 1;
-					char = message[index];
+					char = message[index_an3[3:0]];
 				end
 				4'b0000: 
 				begin 

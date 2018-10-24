@@ -16,9 +16,13 @@
  * Implementation: 
  * 1)It connects reset with the synchronizer circuit and then 
  * with the anti-bouncer circuit. (using the old clk - 20ns).
+ *  Comment: Since there isn't a problem if reset is pressed too many
+ *   times - as it ends up at init_state(check fsm.v flow table) no matter
+ *   where we are - the parameter for the anti-bounce circuit is only 2 (->40ns).
  * 2)It drives the old clk to DCM circuit for the new clk (320ns).
  * 3)It synchronizes the button signal and drives it to another
- * anti-bouncing circuit.
+ * anti-bouncing circuit(for the FPGA: 62500 cycles) * 320ns = 0.02sec. (max bouncing time)
+ *    (for the simulation - waveforms:     2 cycles) * 320ns = 640nsec.
  * 4)It connects theses 3 input signals to the fsm circuit which 
  * decides which characters are to display and the anode.
  * 5)Then drives the characters to the LEDdecoder to match them with
@@ -38,12 +42,12 @@ module FourDigitLEDdriver(reset, button, clk, an3, an2, an1, an0,
 	wire [6:0] LED;
 	wire [3:0] char;
 
-	reset_synchronizer rst_synchr_inst(.clk(clk), 
+	reset_synchronizer rst_synchrINSTANCE(.clk(clk), 
 												.reset(reset), 
 												.new_reset(reset_synchr));  
 
 	debounce_circuit #(.SUFFICIENT_CYCLES(10) 
-							)debounceINSTANCE(.clk(clk), 
+							)rst_debounceINSTANCE(.clk(clk), 
 													.button_input(reset_synchr), 
 													.button_output(reset_debounce));
 	
@@ -71,12 +75,12 @@ module FourDigitLEDdriver(reset, button, clk, an3, an2, an1, an0,
       .RST(reset_debounce)
    ); 
 
-	reset_synchronizer button_synchr_inst(.clk(new_clk), 
+	reset_synchronizer button_synchrINSTANCE(.clk(new_clk), 
 												.reset(button), 
 												.new_reset(button_synchr));  
 	
-	debounce_circuit #(.SUFFICIENT_CYCLES(2) // (teliko noumero: 312500) * 320ns = 0.1sec
-							)button_debounce(.clk(new_clk), 
+	debounce_circuit #(.SUFFICIENT_CYCLES(2)    //(for the FPGA: 62500)
+							)button_debounceINSTANCE(.clk(new_clk), 
 													.button_input(button_synchr), 
 													.button_output(button_deb));
 
