@@ -1,5 +1,21 @@
 `timescale 1ns / 10ps
 
+/* Axelou Olympia
+ * oaxelou@uth.gr
+ * 2161
+ *
+ * ce430
+ * Project2: UART
+ *
+ * Part C: UART receiver
+ *
+ *
+ * testbench : tests 3 cases: first one : 'AA' with parity bit: 0
+ *                            second one: '89' with parity bit: 1
+ *                            third one : 'FF' with parity bit: 0
+ *
+ */
+
 module tb_uart_receiver;
 
 reg reset, clk;
