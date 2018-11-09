@@ -7,7 +7,7 @@
  * ce430
  * Project2: UART
  *
- * Part C: UART receiver
+ * Part D: UART receiver
  *
  *
  * testbench : tests 3 cases: first one : 'AA' with parity bit: 0
@@ -22,6 +22,9 @@ reg reset, clk;
 reg Tx_EN, Tx_WR, Rx_EN;
 reg [7:0] Tx_DATA;
 
+reg [7:0] Tx_DATA_buffer [0:2];
+reg [1:0] word_counter;
+
 wire Tx_BUSY, TxD;
 
 wire [7:0] Rx_DATA_aka_output;
@@ -29,6 +32,11 @@ wire Rx_FERROR, Rx_PERROR, Rx_VALID;
 
 initial
 begin
+  Tx_DATA_buffer[0] = 8'b10101010;
+  Tx_DATA_buffer[1] = 8'b10001001;
+  Tx_DATA_buffer[2] = 8'b11111111;
+  word_counter = 2'b10;
+
   clk = 1'b1;
 
   #200 reset = 1'b1;
@@ -36,57 +44,27 @@ begin
 
   Tx_EN = 1'b1;
   Rx_EN = 1'b1;
+end
 
-  #100
-  $display("Gonna try transmitting AA");
-  if(!Tx_BUSY)
-  begin
-    Tx_DATA[7] = 1;
-    Tx_DATA[6] = 0;
-    Tx_DATA[5] = 1;
-    Tx_DATA[4] = 0;
-    Tx_DATA[3] = 1;
-    Tx_DATA[2] = 0;
-    Tx_DATA[1] = 1;
-    Tx_DATA[0] = 0;
-    // Tx_DATA = {1,0,1,0,1,0,1,0};
-    Tx_WR = 1'b1;
-    #20 Tx_WR = 1'b0;
-  end
+always @ (negedge Tx_BUSY) begin
+  word_counter = word_counter + 1;
+  if(word_counter == 2'b11)
+    word_counter = 2'b00;
 
-  #300000
-  $display("Gonna try transmitting 89");
-  if(!Tx_BUSY)
-  begin
-    Tx_DATA[7] = 1;
-    Tx_DATA[6] = 0;
-    Tx_DATA[5] = 0;
-    Tx_DATA[4] = 0;
-    Tx_DATA[3] = 1;
-    Tx_DATA[2] = 0;
-    Tx_DATA[1] = 0;
-    Tx_DATA[0] = 1;
-    // Tx_DATA = {1,0,0,0,1,0,0,1};
-    Tx_WR = 1'b1;
-    #20 Tx_WR = 1'b0;
-  end
+  Tx_DATA = Tx_DATA_buffer[word_counter];
 
-  #300000
-  $display("Gonna try transmitting FF");
-  if(!Tx_BUSY)
-  begin
-    Tx_DATA[7] = 1;
-    Tx_DATA[6] = 1;
-    Tx_DATA[5] = 1;
-    Tx_DATA[4] = 1;
-    Tx_DATA[3] = 1;
-    Tx_DATA[2] = 1;
-    Tx_DATA[1] = 1;
-    Tx_DATA[0] = 1;
-    // Tx_DATA = {1,0,0,0,1,0,0,1};
-    Tx_WR = 1'b1;
-    #20 Tx_WR = 1'b0;
-  end
+  Tx_WR = 1'b1;
+  #20 Tx_WR = 1'b0;
+
+  $display("Gonna try transmitting %x\n", Tx_DATA_buffer[word_counter]);
+end
+
+always @ (posedge Rx_VALID) begin
+  $display("received : %x%x\n", Rx_DATA_aka_output[7:4], Rx_DATA_aka_output[3:0]);
+  // if(word_counter == 2'b11) begin      // uncomment to test the EN signals
+  //   Tx_EN = 1'b0;
+  //   Rx_EN = 1'b0;
+  // end
 end
 
 always #10 clk = ~clk;
