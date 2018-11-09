@@ -7,7 +7,7 @@
  * ce430
  * Project2: UART
  *
- * Part D: UART receiver
+ * Part C: UART receiver
  *
  *
  * testbench : tests 3 cases: first one : 'AA' with parity bit: 0
