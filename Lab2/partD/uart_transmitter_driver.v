@@ -43,19 +43,21 @@ module uart_transmitter_driver(reset, clk, Tx_BUSY, Tx_DATA, Tx_WR);
     end
     else
     begin
+      if(Tx_WR)
+        Tx_WR = ~Tx_WR;
       if(!Tx_BUSY) begin
         word_counter = word_counter + 1;
-        $display("Gonna try transmitting %x\n", Tx_DATA_buffer[word_counter]);
+        // $display("Gonna try transmitting %x\n", Tx_DATA_buffer[word_counter]);
 
         Tx_DATA = Tx_DATA_buffer[word_counter];
 
-        Tx_WR <= 1'b1;  //so that it won't mess up with the always
+        Tx_WR = 1'b1;  //so that it won't mess up with the always
       end
     end
   end
 
-  always @(posedge clk)
-    if(Tx_WR)
-      Tx_WR = ~Tx_WR;
+  // always @(posedge clk)
+  //   if(Tx_WR)
+      // Tx_WR <= ~Tx_WR;
 
 endmodule

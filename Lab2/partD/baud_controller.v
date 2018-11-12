@@ -41,8 +41,4 @@ always @(posedge clk or posedge reset)
       sample_ENABLE = 1'b0;
       counter = counter + 1;
     end
-begin
-
-end
-
 endmodule

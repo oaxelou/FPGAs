@@ -1,0 +1,22 @@
+NET clk LOC = T9;
+NET an1 LOC = F14;
+NET an0 LOC = G14;
+
+NET a LOC = E14;
+NET b LOC = G13;
+NET c LOC = N15;
+NET d LOC = P15;
+NET e LOC = R16;
+NET f LOC = F13;
+NET g LOC = N16;
+NET dp LOC = P16;
+NET reset LOC = L14;
+
+NET Tx_EN LOC = J14;
+NET Rx_EN LOC = H13;
+NET baud_select[2] = K13;
+NET baud_select[1] = K14;
+NET baud_select[0] = J13;
+
+NET "clk" TNM_NET = "clk";
+TIMESPEC "TS_clk" = PERIOD "clk" 20 ns HIGH 50 %;

@@ -25,6 +25,7 @@ module uart(reset, clk, Tx_EN, Rx_EN, baud_select, an1, an0, a, b, c, d, e, f, g
   output an1, an0;
   output a, b, c, d, e, f, g, dp;
 
+  wire synchr_reset, debounce_reset;
   wire fb_output, new_clk;
 
   wire [7:0] Tx_DATA;
@@ -35,6 +36,12 @@ module uart(reset, clk, Tx_EN, Rx_EN, baud_select, an1, an0, a, b, c, d, e, f, g
   wire [7:0] Rx_DATA;
   wire [4:0] char_for_7segm;
   wire [7:0] LED;
+
+  synchronizer synchron_INSTANCE
+    (.clk(clk), .input_signal(reset), .output_signal(synchr_reset));
+
+  debounce_circuit #(.SUFFICIENT_CYCLES(2)) debounce_INSTANCE 
+  	( .clk(clk), .button_input(synchr_reset), .button_output(debounce_reset));
 
   DCM #(
    .SIM_MODE("SAFE"),
@@ -57,23 +64,23 @@ module uart(reset, clk, Tx_EN, Rx_EN, baud_select, an1, an0, a, b, c, d, e, f, g
    .CLKDV(new_clk),
    .CLKFB(fb_output),
    .CLKIN(clk),
-   .RST(reset)  // auto kanonika einai reset_debounce
+   .RST(debounce_reset)
 );
 
   uart_transmitter_driver transmitter_driver_INSTANCE
-             (.reset(reset), .clk(clk), .Tx_BUSY(Tx_BUSY), .Tx_DATA(Tx_DATA), .Tx_WR(Tx_WR));
+             (.reset(debounce_reset), .clk(clk), .Tx_BUSY(Tx_BUSY), .Tx_DATA(Tx_DATA), .Tx_WR(Tx_WR));
 
   uart_transmitter uart_transmitter_instance
-               (.reset(reset), .clk(clk), .Tx_DATA(Tx_DATA), .baud_select(baud_select),
+               (.reset(debounce_reset), .clk(clk), .Tx_DATA(Tx_DATA), .baud_select(baud_select),
                 .Tx_WR(Tx_WR), .Tx_EN(Tx_EN), .TxD(TxD), .Tx_BUSY(Tx_BUSY));
 
   uart_receiver uart_receiver_instance
-               (.reset(reset), .clk(clk), .Rx_DATA(Rx_DATA),
+               (.reset(debounce_reset), .clk(clk), .Rx_DATA(Rx_DATA),
                 .baud_select(baud_select), .Rx_EN(Rx_EN), .RxD(TxD),
                 .Rx_FERROR(Rx_FERROR), .Rx_PERROR(Rx_PERROR), .Rx_VALID(Rx_VALID));
 
   seven_segment_driver sev_segm_dr_INSTANCE
-                       (.reset(reset), .clk(new_clk), .Rx_VALID(Rx_VALID),
+                       (.reset(debounce_reset), .clk(new_clk), .Rx_VALID(Rx_VALID),
                         .Rx_FERROR(Rx_FERROR), .Rx_PERROR(Rx_PERROR),
                         .Rx_DATA(Rx_DATA), .an1(an1), .an0(an0),
                         .char_for_7segm(char_for_7segm));
