@@ -1,22 +1,25 @@
 NET clk LOC = T9;
-NET an1 LOC = F14;
-NET an0 LOC = G14;
-
-NET a LOC = E14;
-NET b LOC = G13;
-NET c LOC = N15;
-NET d LOC = P15;
-NET e LOC = R16;
-NET f LOC = F13;
-NET g LOC = N16;
-NET dp LOC = P16;
 NET reset LOC = L14;
 
-NET Tx_EN LOC = J14;
-NET Rx_EN LOC = H13;
-NET baud_select[2] = K13;
-NET baud_select[1] = K14;
-NET baud_select[0] = J13;
+NET an1 LOC = J14;
+NET an0 LOC = G14;
+
+NET LED[7] LOC = E14;
+NET LED[6] LOC = G13;
+NET LED[5] LOC = N15;
+NET LED[4] LOC = P15;
+NET LED[3] LOC = R16;
+NET LED[2] LOC = F13;
+NET LED[1] LOC = N16;
+NET LED[0] LOC = P16;
+
+NET Rx_FERROR LOC = E13;
+NET Rx_PERROR LOC = F14;
+NET Rx_VALID LOC = D14;
+
+NET TxD LOC = H13;
+NET Tx_EN LOC = K13;
+NET Rx_EN LOC = K14;
 
 NET "clk" TNM_NET = "clk";
 TIMESPEC "TS_clk" = PERIOD "clk" 20 ns HIGH 50 %;

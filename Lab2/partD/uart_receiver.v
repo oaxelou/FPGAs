@@ -52,7 +52,6 @@ reg [3:0] data_counter;
 reg [7:0] data_buffer;
 
 reg parity_check_done;
-reg frame_check_done;
 reg end_of_communication;
 
 reg [2:0] circuit_enabled;
@@ -69,8 +68,8 @@ baud_controller baud_controller_rx_instance(reset, clk, baud_select,
 /******************************************************************/
 /* allaksa sta inputs tou synchronizer to clk se Rx_sample_ENABLE */
 /******************************************************************/
-synchronizer data_synchronizer_instance(.clk(Rx_sample_ENABLE), .input_signal(RxD),
-                                        .output_signal(synchronized_RxD));
+channel_synchronizer data_synchronizer_instance(.clk(Rx_sample_ENABLE), .reset(reset), 
+                     .input_signal(RxD),.output_signal(synchronized_RxD));
 
 
 // THE CONTROL UNIT
@@ -101,8 +100,8 @@ end
 always @ (posedge Rx_sample_ENABLE or posedge reset) begin
   if(reset)
   begin
-    start_bit_detected = 1'b0;
-    old_start = 1'b1;
+    start_bit_detected <= 1'b0;
+    old_start <= 1'b1;
   end
   else if(Rx_EN)
     case(circuit_enabled)
@@ -110,14 +109,14 @@ always @ (posedge Rx_sample_ENABLE or posedge reset) begin
       begin
         if(old_start == 1'b1 && old_start != synchronized_RxD)
         begin
-          start_bit_detected = 1'b1;
-          old_start = synchronized_RxD;
+          start_bit_detected <= 1'b1;
+          old_start <= synchronized_RxD;
         end
       end
       locking_s:
       begin
-        start_bit_detected = 1'b0;
-        old_start = 1'b1;
+        start_bit_detected <= 1'b0;
+        old_start <= 1'b1;
       end
     endcase
 end
@@ -126,7 +125,7 @@ end
 always @ (posedge Rx_sample_ENABLE or posedge reset) begin
   if(reset)
   begin
-    counter = 5'b00000;
+    counter = 5'b00001;
     found_sampling_center = 1'b0;
     sample_ENABLE = 1'b0;
   end
@@ -134,9 +133,9 @@ always @ (posedge Rx_sample_ENABLE or posedge reset) begin
     case(circuit_enabled)
       locking_s:
         case(counter)                     // counter max: 24 cycles
-          5'b10100:
+          5'b10111:
           begin
-            counter = 5'b01111;           // starts from this bit so that
+            counter = 5'b01110;           // starts from this bit so that
             found_sampling_center = 1'b1; // sample_ENABLE will become 1
           end                             // at the first cycle
           default: counter = counter + 1;
@@ -236,7 +235,6 @@ end
 always @ (posedge sample_ENABLE or posedge reset) begin
   if(reset)
   begin
-    frame_check_done = 1'b0;
     Rx_FERROR = 1'b0;
   end
   else if(Rx_EN)
@@ -245,11 +243,9 @@ always @ (posedge sample_ENABLE or posedge reset) begin
       begin
         if(!synchronized_RxD)
           Rx_FERROR = 1'b1;
-        frame_check_done = 1'b1;
       end
       sampling:
-      begin
-        frame_check_done = 1'b0;        // initialization for the next set of data
+      begin                             // initialization for the next set of data
         Rx_FERROR = 1'b0;               // is done in the next communication,
       end                               // and particularly in sampling process
     endcase

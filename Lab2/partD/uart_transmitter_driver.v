@@ -45,7 +45,7 @@ module uart_transmitter_driver(reset, clk, Tx_BUSY, Tx_DATA, Tx_WR);
     begin
       if(Tx_WR)
         Tx_WR = ~Tx_WR;
-      if(!Tx_BUSY) begin
+      else if(!Tx_BUSY) begin
         word_counter = word_counter + 1;
         // $display("Gonna try transmitting %x\n", Tx_DATA_buffer[word_counter]);
 

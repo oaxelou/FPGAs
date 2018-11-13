@@ -98,7 +98,7 @@ always @(posedge Tx_sample_ENABLE or posedge reset) begin
 	  endcase
 end
 
-always @ (Tx_EN or Tx_WR or reset or data_transmitted or data_assign_ENABLE) begin
+/*always @ (Tx_EN or Tx_WR or reset or data_transmitted or data_assign_ENABLE) begin
   if(reset) begin
     Tx_BUSY = 1'b0;
     got_WR_signal = 1'b0;
@@ -114,26 +114,25 @@ always @ (Tx_EN or Tx_WR or reset or data_transmitted or data_assign_ENABLE) beg
     Tx_BUSY = 1'b0;
     got_WR_signal = 1'b0;
   end
-end
+end*/
 
 // sends BUSY signal when data from the system have arrived
-/*always @(posedge clk or posedge reset) begin
+always @(posedge clk or posedge reset) begin
   if(reset) begin
-    // Tx_BUSY = 1'b0;
+    Tx_BUSY = 1'b0;
     got_WR_signal = 1'b0;
   end
-  else if(Tx_EN && WR_signal_check_ENABLE) begin
-    // if(Tx_BUSY && data_assigned)    // edw thelei ki allo elegxo!
-      // Tx_BUSY = 1'b0;
-    if(Tx_BUSY) begin
-      got_WR_signal = 1'b1;
-      // Tx_BUSY = 1'b1;
-    end
+  else if(Tx_EN && Tx_WR) begin
+    Tx_BUSY = 1'b1;
+    got_WR_signal = 1'b1;
   end
   else if(Tx_EN && data_assign_ENABLE) begin
     got_WR_signal = 1'b0;
   end
-end*/
+  else if(data_transmitted && !got_WR_signal) begin
+    Tx_BUSY = 1'b0;
+  end
+end
 
 // DATA BUFFER & COUNTER ASSIGN UNIT
 always @ (posedge transmit_ENABLE or posedge reset) begin
