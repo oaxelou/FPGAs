@@ -38,7 +38,6 @@ output Tx_BUSY;
 reg TxD;
 reg Tx_BUSY;
 
-// reg internal_BUSY;
 reg transmit_ENABLE;
 reg [3:0] counter;
 
@@ -47,12 +46,11 @@ reg [0:10] data_to_send;
 
 baud_controller baud_controller_tx_instance(reset, clk, baud_select, Tx_sample_ENABLE);
 
-//reg , , ;
 reg got_WR_signal, data_assigned, data_transmitted;
 
 reg [1:0] circuit_enabled;
 
-parameter WR_signal_check_ENABLE = 3'b00,
+parameter WR_signal_check_ENABLE = 2'b00,
           data_assign_ENABLE = 2'b01,
           transmission_ENABLE  = 2'b11;
 
