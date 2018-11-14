@@ -52,8 +52,7 @@ reg [3:0] data_counter;
 reg [7:0] data_buffer;
 
 reg parity_check_done;
-reg frame_check_done;
-reg end_of_communication;
+reg frame_check_done, end_of_communication;
 
 reg [2:0] circuit_enabled;
 
@@ -61,7 +60,8 @@ parameter start_bit = 3'b000,
           locking_s = 3'b001,
           sampling  = 3'b011,
           parity_ch = 3'b010,
-          frame_che = 3'b110;
+          frame_che = 3'b110,
+          send_d    = 3'b111;
 
 baud_controller baud_controller_rx_instance(reset, clk, baud_select,
                                             Rx_sample_ENABLE);
@@ -69,8 +69,8 @@ baud_controller baud_controller_rx_instance(reset, clk, baud_select,
 /******************************************************************/
 /* allaksa sta inputs tou synchronizer to clk se Rx_sample_ENABLE */
 /******************************************************************/
-synchronizer data_synchronizer_instance(.clk(Rx_sample_ENABLE), .input_signal(RxD),
-                                        .output_signal(synchronized_RxD));
+channel_synchronizer data_synchronizer_instance(.clk(Rx_sample_ENABLE), .reset(reset),
+                     .input_signal(RxD),.output_signal(synchronized_RxD));
 
 
 // THE CONTROL UNIT
@@ -92,6 +92,9 @@ always @ (posedge Rx_sample_ENABLE or posedge reset) begin
         if(parity_check_done)
           circuit_enabled = frame_che;
       frame_che:
+      if(frame_check_done)
+        circuit_enabled = send_d;
+      send_d:
       if(end_of_communication)
         circuit_enabled = start_bit;
     endcase
@@ -101,8 +104,8 @@ end
 always @ (posedge Rx_sample_ENABLE or posedge reset) begin
   if(reset)
   begin
-    start_bit_detected = 1'b0;
-    old_start = 1'b1;
+    start_bit_detected <= 1'b0;
+    old_start <= 1'b1;
   end
   else if(Rx_EN)
     case(circuit_enabled)
@@ -110,14 +113,14 @@ always @ (posedge Rx_sample_ENABLE or posedge reset) begin
       begin
         if(old_start == 1'b1 && old_start != synchronized_RxD)
         begin
-          start_bit_detected = 1'b1;
-          old_start = synchronized_RxD;
+          start_bit_detected <= 1'b1;
+          old_start <= synchronized_RxD;
         end
       end
       locking_s:
       begin
-        start_bit_detected = 1'b0;
-        old_start = 1'b1;
+        start_bit_detected <= 1'b0;
+        old_start <= 1'b1;
       end
     endcase
 end
@@ -134,14 +137,14 @@ always @ (posedge Rx_sample_ENABLE or posedge reset) begin
     case(circuit_enabled)
       locking_s:
         case(counter)                     // counter max: 24 cycles
-          5'b10100:
+          5'b10010:
           begin
-            counter = 5'b01111;           // starts from this bit so that
+            counter = 5'b01110;           // starts from this bit so that
             found_sampling_center = 1'b1; // sample_ENABLE will become 1
           end                             // at the first cycle
           default: counter = counter + 1;
         endcase
-      sampling, parity_ch, frame_che:
+      sampling, parity_ch, frame_che, send_d:
         case(counter)               // the 16cylces counter is used for data collection,
           5'b01111:                 // the parity checking and the frame checking
           begin
@@ -194,9 +197,9 @@ always @ (posedge sample_ENABLE or posedge reset) begin
           end_of_communication = 1'b0; // the previous communication
         end
       end
-      frame_che:
+      send_d:
       begin
-        if(!Rx_PERROR && !Rx_FERROR)
+        if(frame_check_done && !Rx_PERROR && !Rx_FERROR)
         begin
           Rx_VALID = 1'b1;
           Rx_DATA = data_buffer;
@@ -236,8 +239,8 @@ end
 always @ (posedge sample_ENABLE or posedge reset) begin
   if(reset)
   begin
-    frame_check_done = 1'b0;
     Rx_FERROR = 1'b0;
+    frame_check_done = 1'b0;
   end
   else if(Rx_EN)
     case(circuit_enabled)
@@ -248,9 +251,9 @@ always @ (posedge sample_ENABLE or posedge reset) begin
         frame_check_done = 1'b1;
       end
       sampling:
-      begin
-        frame_check_done = 1'b0;        // initialization for the next set of data
+      begin                             // initialization for the next set of data
         Rx_FERROR = 1'b0;               // is done in the next communication,
+        frame_check_done = 1'b0;
       end                               // and particularly in sampling process
     endcase
 end
