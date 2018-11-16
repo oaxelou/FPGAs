@@ -8,7 +8,8 @@
  * Part C: receiver implementation
  *
  *
- * synchronizer: Synchronizes the input of the receiver (asynchronous communication)
+ * channel synchronizer: Synchronizes the input of the receiver
+ *                          (asynchronous communication)
  *
  * input : clk, input_signal
  * output: syncronized signal
@@ -17,6 +18,9 @@
  *   Uses 2 flip-flops.
  *   The first one is to ensure that there will be no setup problem
  *   and the second one is for the metastability.
+ *
+ * The only difference with the typical synchronizer for the reset signal
+ * is that the flip-flops have a reset signal to initialize the channel.
  */
 
 module channel_synchronizer(clk, reset, input_signal, output_signal);

@@ -7,14 +7,12 @@
  * ce430
  * Project2: UART
  *
- * Part D: UART receiver
+ * Part D-1: UART communication
  *
  *
- * testbench : tests 3 cases: first one : 'AA' with parity bit: 0
- *                            second one: '55' with parity bit: 0
- *                            third one : 'CC' with parity bit: 0
- *                            fourth one: '89' with parity bit: 1
- * Treskto auto 6000ns 
+ * testbench : initializes the circuit (clock, reset, enable signals, baud rate)
+ *
+ * Let it run for 6000μs.
  */
 
 module tb_uart;
@@ -27,24 +25,24 @@ reg reset, clk;
 reg [2:0] baud_select;
 reg Tx_EN, Rx_EN;
 
-initial begin 
+initial begin
   clk = 1'b1;
 
   baud_select = 3'b111;
-  
+
   #190 reset = 1'b1;
   #1000 reset = 1'b0;
-  
+
   Tx_EN = 1'b1;
   Rx_EN = 1'b1;
-  
+
   #1310000 baud_select = 3'b100;
 end
 
 always #10 clk = ~clk;
 
 uart uart_INSTANCE(.reset(reset), .clk(clk), .baud_select(baud_select),
-                   .Tx_BUSY(Tx_BUSY), .Tx_WR(Tx_WR), .TxD(TxD), .Tx_EN(Tx_EN), 
-						 .Rx_EN(Rx_EN), .Rx_DATA(Rx_DATA), .Rx_FERROR(Rx_FERROR), 
-						 .Rx_PERROR(Rx_PERROR), .Rx_VALID(Rx_VALID));
+                   .Tx_BUSY(Tx_BUSY), .Tx_WR(Tx_WR), .TxD(TxD), .Tx_EN(Tx_EN),
+						       .Rx_EN(Rx_EN), .Rx_DATA(Rx_DATA), .Rx_FERROR(Rx_FERROR),
+						       .Rx_PERROR(Rx_PERROR), .Rx_VALID(Rx_VALID));
 endmodule

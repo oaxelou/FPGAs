@@ -8,10 +8,13 @@
  * Part D: uart_transmitter_driver
  *
  *
- * uart_transmitter_driver: Selects the data to be transmitted
+ * uart_transmitter_driver: Selects the data to be transmitted.
  *
  * input : clk, reset, Tx_BUSY
  * output: Tx_WR, Tx_DATA
+ *
+ * The 4 symbols to be sent ('aa', '55', 'cc', '89') are stored in a buffer
+ * which is accessed circularly.
  *
  */
 
@@ -45,11 +48,11 @@ module uart_transmitter_driver(reset, clk, Tx_BUSY, Tx_DATA, Tx_WR);
     begin
       if(Tx_WR)
         Tx_WR = ~Tx_WR;
-      else if(!Tx_BUSY) begin
-        word_counter = word_counter + 1;
-        Tx_DATA = Tx_DATA_buffer[word_counter];
+      else if(!Tx_BUSY) begin              // in every posedge of the clk enters
+        word_counter = word_counter + 1;   // the always block but only when
+        Tx_DATA = Tx_DATA_buffer[word_counter]; // !Tx_BUSY sends new data
 
-        Tx_WR = 1'b1;  //so that it won't mess up with the always
+        Tx_WR = 1'b1;      // to notify the transmitter that there's new data
       end
     end
   end
