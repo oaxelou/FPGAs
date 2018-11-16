@@ -8,21 +8,36 @@
  * Part B: UART transmitter
  *
  *
- * receiver: Receives as input the data(1 bit at a time) & control signals (from the user)
- *           and produces the final bus of data (8bit) and passes it to the user.
+ * transmitter: Receives the data to transmit from the user and sends them one
+ *              by one through the channel.
  *
- * input : clk, clk, baud_select, Tx_DATA, Tx_EN, Tx_WR
+ * input : reset, clk, baud_select, Tx_DATA, Tx_EN, Tx_WR
  * output: TxD, Tx_BUSY
  *
  * Implementation:
  *   The circuit for the transmitter is divided into 4 sub-circuits:
- *     1) The one with the counter: 16-cycles counter calculates when to transmit
- *     2) The one that sends a busy signal when data from the system have arrived
- *        and sets to TRUE the internal_BUSY signal which signals
- *        (so that the data processing can begin)
- *     3) The one that stores the data in a buffer & sets the index of the buffer to 0
- *     4) The transmission unit: icrements the data counter and drives the correct
- *        bit to the output.
+ *     1) Control Unit - Sends enable signals to the proper circuit
+       2) The one with the counter: 16-cycles counter calculates when to transmit
+ *     3) The one that sends a busy signal when data from the system have arrived
+ *        (it's also used after the transmission to stop sending BUSY signal)
+ *     4) The one that stores the data from the user in a buffer
+ *     5) The transmission unit: increments the data_counter and drives the
+ *        correct bit to the output.
+ *
+ * To enable-disable each circuit, I use 2 buses. The first one to enable the
+ * circuit: it's set in the control unit and used in each of the circuit and the
+ * second one is to disable the circuit and is set in each of the circuits and
+ * used in the control unit: that's how we pass from the one circuit to the other.
+ *
+ * The control unit and the busy-signal unit are in the clock domain of the system.
+ * of the user and the data assign and transmission unit are enabled when the
+ * signal Tx_sample_ENABLE is enabled, which is produced by the circuit with the
+ * 16-cycles counter (which is in the transmit_ENABLE domain).
+ *
+ * Each of the circuit is used when the signal that corresponds to it is enabled.
+ * The initialization of the circuit is done when another circuit is currently
+ * used (so that is will be ready for the next set of data).
+ *
  */
 
 module uart_transmitter(reset, clk, Tx_DATA, baud_select, Tx_WR, Tx_EN, TxD, Tx_BUSY);
@@ -54,6 +69,7 @@ parameter WR_signal_check_ENABLE = 2'b00,
           data_assign_ENABLE = 2'b01,
           transmission_ENABLE  = 2'b11;
 
+//Control Unit - Sends enable signals to the proper circuit
 always @ (posedge clk or posedge reset) begin
   if(reset) begin
     circuit_enabled = 2'b00;
@@ -115,7 +131,7 @@ always @(posedge clk or posedge reset) begin
   end
 end
 
-// DATA BUFFER & COUNTER ASSIGN UNIT
+// DATA BUFFER ASSIGN UNIT
 always @ (posedge transmit_ENABLE or posedge reset) begin
   if(reset)
   begin
@@ -123,7 +139,7 @@ always @ (posedge transmit_ENABLE or posedge reset) begin
     data_assigned = 1'b0;
   end
   else if(Tx_EN)
-    case(circuit_enabled) 
+    case(circuit_enabled)
 	 data_assign_ENABLE: begin
       data_to_send[0] = 1'b0;
       data_to_send[1] = Tx_DATA[0];
@@ -150,7 +166,7 @@ always @(posedge transmit_ENABLE or posedge reset) begin
   begin
     data_transmitted = 1'b0;
     TxD = 1'b1;
-    index_data_to_send = 4'b0000;   // auto tha paei sto katw always
+    index_data_to_send = 4'b0000;
   end
   else if(Tx_EN)
     case(circuit_enabled)
@@ -166,7 +182,7 @@ always @(posedge transmit_ENABLE or posedge reset) begin
           index_data_to_send = index_data_to_send + 1;
         end
       end
-		data_assign_ENABLE: begin
+		data_assign_ENABLE: begin     // initialization for the next set of data
         data_transmitted = 1'b0;
         index_data_to_send = 4'b0000;
         TxD = 1'b1;
