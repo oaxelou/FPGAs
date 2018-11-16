@@ -1,6 +1,36 @@
-/*
+/* Axelou Olympia
+ * oaxelou@uth.gr
+ * 2161
  *
- * Treksto gia 600ns !
+ * ce430
+ * Project2: UART
+ *
+ * Part A: Baud Rate Controller
+ *
+ *
+ * baud rate controller testbench:
+ * Sets the baud_select to the 9 possible states
+ * and checks if the baud_controller circuit works properly.
+ *
+ * The results should be the following:
+ *   baud_select   |  sample_ENABLE period (ns)
+ *     3'b111      |          540
+ *     3'b110      |        1,080
+ *     3'b101      |        1,620
+ *     3'b100      |        3,260
+ *     3'b011      |        6,520
+ *     3'b010      |       13,020
+ *     3'b001      |       52,080
+ *     3'b000      |      208,340
+ *
+ * !!! To notice the results run this testbench for 600μs !!!
+ *
+ * Implementation:
+ *   -> 1 combinational always block which sets the max value of the counter
+ *      (based on the input)
+ *   -> 1 sequential always block which changes the value of the counter
+ *   -> 1 combinational always block which calculates the next state
+ *      (whether to enable the sample_ENABLE signal or not)
  */
 
 module tb_baud_controller;
@@ -19,7 +49,7 @@ begin
 
   #1200 reset = 1'b1;
   #100  reset = 1'b0;
-  
+
   reg_baud_select = 3'b111;
   #5000
   reg_baud_select = 3'b110;
@@ -39,7 +69,7 @@ end
 
 always #10 clk = ~clk;
 
-baud_controller baud_controllerINSTANCE(.reset(reset), .clk(clk), .baud_select(reg_baud_select),
-                                        .sample_ENABLE(sample_ENABLE));
+baud_controller baud_controllerINSTANCE(.reset(reset), .clk(clk), .
+    baud_select(reg_baud_select), .sample_ENABLE(sample_ENABLE));
 
 endmodule
