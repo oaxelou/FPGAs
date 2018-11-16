@@ -5,10 +5,10 @@
  * ce430
  * Project2: UART
  *
- * Part C: receiver implementation
+ * Part D-2: transmitter implementation
  *
  *
- * synchronizer: Synchronizes the input of the receiver (asynchronous communication)
+ * synchronizer: Synchronizes the reset signal
  *
  * input : clk, input_signal
  * output: syncronized signal

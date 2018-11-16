@@ -1,31 +1,36 @@
 /* Axelou Olympia
- * oaxelou@uth.gr 
+ * oaxelou@uth.gr
  * 2161
- * 
+ *
  * ce430
- * Project1: 7-Segment display
+ * Project2: UART communication
  *
- * Part D: 16-char message display circular with a timer
- * (the same file as of part A)
- * 
+ * Part D-2: 16-char message display circular with a timer
+ *
  * LEDdecoder: input: the character to project
- *               (active high i.e. char 'a' : 4'b1010)
- *	      output: the LEDs of the 7-Segment display
- *               (active low)
+ *                    (active high i.e. char 'a' : 4'b1010)
+ *	          output: the LEDs of the 7-Segment display
+ *                    (active low)
  *
- *
- * This circuit maps the binary code of a char 
- * to the segments that must be opened to display 
- * the char on the seven segment indicator.
+ * This circuit maps the binary code of a char to the segments that
+ * must be opened to display the char on the seven segment indicator.
  * (given that a segment is 0 when opened)
  *
- * E.g., char 'a' : 
+ * E.g., char 'a' :
  *                  binary code: 1010
  *                  7-S-D  code: 0001000
- *                                _  
+ *                                _
  *                visual result: | |
  *                                -
  *                               | |
+ *
+ * Comments on the LEDdecoder:
+ * -> The file is taken from the first project (message on a 7-segment display)
+ *    but since I want now to display a specific message that does not
+ *    include the character '1', I map on it the 'P' character in order to
+ *    display the parity error like this : "--PE"
+ *    and the frame error in the same way: "--FE"
+ *
  */
 
 module LEDdecoder(in, LED);

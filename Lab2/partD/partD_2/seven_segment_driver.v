@@ -5,14 +5,23 @@
  * ce430
  * Project2: UART
  *
- * Part D: uart_transmitter_driver
+ * Part D-2: seven segment driver
  *
+ * 7-Segment Driver: Given the received data and the error signals it drives
+ *                   the output to one of the 2 anodes (an1 or an0). The others
+ *                   are permanently closed. The character to display then
+ *                   becomes the input of the LEDdecoder circuit.
  *
- * uart_transmitter_driver: Selects the data to be transmitted
+ * input : clk, reset, Rx_VALID, Rx_FERROR, Rx_PERROR, Rx_DATA
+ * output: an1, an0, char_for_7segm
  *
- * input : clk, reset, Tx_BUSY
- * output: Tx_WR, Tx_DATA
- *
+ * Comments on the implementation:
+ * -> It chooses the message to display first by checking the two error signals:
+ *    if either of them is up then the message is the default "FE" or "PE" for
+ *    frame error and parity error respectively. Then checks if the VALID signal
+ *    is up, then it assigns the value of Rx_DATA (received data). If none of
+ *    the above is the case, it keeps projecting the last message it received
+ *    (an error message ,the received data or "00" : the value after the reset).
  */
 
 module seven_segment_driver(reset, clk, Rx_VALID, Rx_FERROR, Rx_PERROR, Rx_DATA, an1, an0, char_for_7segm);
@@ -72,5 +81,3 @@ module seven_segment_driver(reset, clk, Rx_VALID, Rx_FERROR, Rx_PERROR, Rx_DATA,
   end
 
 endmodule
-
-
