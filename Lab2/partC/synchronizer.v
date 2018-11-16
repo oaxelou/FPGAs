@@ -8,7 +8,7 @@
  * Part C: receiver implementation
  *
  *
- * synchronizer: Synchronizes the input of the receiver (asynchronous communication)
+ * synchronizer: Synchronizes the reset signal
  *
  * input : clk, input_signal
  * output: syncronized signal

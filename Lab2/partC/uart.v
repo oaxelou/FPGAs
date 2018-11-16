@@ -5,17 +5,13 @@
  * ce430
  * Project2: UART
  *
- * Part D: UART (TOP LEVEL MODULE)
+ * Part C: UART receiver (TOP LEVEL MODULE)
  *
- * input : reset, clk, Tx_EN, Rx_EN, Tx_WR, Tx_DATA,
- * output: Tx_BUSY, Rx_FERROR, Rx_PERROR, Rx_VALID, Rx_DATA_aka_output
+ * input : reset, clk, RxD, Rx_EN, baud_select,
+ * output: Rx_FERROR, Rx_PERROR, Rx_VALID, Rx_DATA
  *
- *
- *
+ * Connects the receiver circuit to the inputs and the outputs
  */
-
- // inputs: clk, reset, 3 switches! (for the baud_select)
- // outputs: the 7-segment pins
 
 module uart(reset, clk, baud_select, RxD, Rx_EN, Rx_DATA, Rx_FERROR, Rx_PERROR, Rx_VALID);
   input reset, clk, RxD, Rx_EN;
@@ -23,7 +19,7 @@ module uart(reset, clk, baud_select, RxD, Rx_EN, Rx_DATA, Rx_FERROR, Rx_PERROR, 
   output Rx_FERROR, Rx_PERROR, Rx_VALID;
   output [7:0] Rx_DATA;
 
-  wire synchr_reset, Rx_EN;
+  wire synchr_reset;
 
   synchronizer synchron_INSTANCE
     (.clk(clk), .input_signal(reset), .output_signal(synchr_reset));
