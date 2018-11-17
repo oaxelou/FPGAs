@@ -17,7 +17,7 @@
  * which is accessed circularly.
  *
  * Comments on the implementation:
- * -> This trasmitter driver circuit differs from the one of the partD-1:
+ * -> This transmitter driver circuit differs from the one of the partD-1:
  *    I have added a 3bit counter to slow down the circuit as - even for the
  *    slowest baud rate - it was too fast in real time.
  */

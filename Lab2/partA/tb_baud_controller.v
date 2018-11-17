@@ -23,14 +23,7 @@
  *     3'b001      |       52,080
  *     3'b000      |      208,340
  *
- * !!! To notice the results run this testbench for 600μs !!!
- *
- * Implementation:
- *   -> 1 combinational always block which sets the max value of the counter
- *      (based on the input)
- *   -> 1 sequential always block which changes the value of the counter
- *   -> 1 combinational always block which calculates the next state
- *      (whether to enable the sample_ENABLE signal or not)
+ * To notice the results run this testbench for 600μs.
  */
 
 module tb_baud_controller;
