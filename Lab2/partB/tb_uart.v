@@ -14,7 +14,7 @@
  *                            second one: '55' with parity bit: 0
  *                            third one : 'CC' with parity bit: 0
  *                            fourth one: '89' with parity bit: 1
- * Run for 6000μs.
+ * Run for 1250us.
  */
 
 module tb_uart;
@@ -43,28 +43,28 @@ initial begin
 
   Tx_EN = 1'b1;
 
-  #1000000 if(!Tx_BUSY) begin
+  #250000 if(!Tx_BUSY) begin
   Tx_DATA = Tx_DATA_buffer[0];
   $display("Gonna try transmitting %x\n", Tx_DATA);
   Tx_WR = 1'b1;
   #20 Tx_WR = 1'b0;
   end
 
-  #1000000 if(!Tx_BUSY) begin
+  #250000 if(!Tx_BUSY) begin
   Tx_DATA = Tx_DATA_buffer[1];
   $display("Gonna try transmitting %x\n", Tx_DATA);
   Tx_WR = 1'b1;
   #20 Tx_WR = 1'b0;
   end
 
-  #1000000 if(!Tx_BUSY) begin
+  #250000 if(!Tx_BUSY) begin
   Tx_DATA = Tx_DATA_buffer[2];
   $display("Gonna try transmitting %x\n", Tx_DATA);
   Tx_WR = 1'b1;
   #20 Tx_WR = 1'b0;
   end
 
-  #1000000 if(!Tx_BUSY) begin
+  #250000 if(!Tx_BUSY) begin
   Tx_DATA = Tx_DATA_buffer[3];
   $display("Gonna try transmitting %x\n", Tx_DATA);
   Tx_WR = 1'b1;
