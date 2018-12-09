@@ -1,15 +1,31 @@
 `timescale 1ns / 10ps
 
+/* Axelou Olympia
+ * oaxelou@uth.gr
+ * 2161
+ *
+ * ce430
+ * Project3: VGA Controller
+ *
+ * Part B: HSYNC Implementation + Horizontal Pixel Counter
+ *
+ *
+ * tb_hsync: Testbench of hsync. Includes the instantiation of the top level module.
+ *
+ *
+ * Testing:
+ *    -> Sets the clock and resets the circuit. The testing is done by
+ *       watching the waveforms.
+ *
+ */
+
 module tb_hsync;
 
 reg reset, clk;
+wire hsync;
 
-wire hsync, display_time;
-
-hsynchronizer hsync_INSTANCE(.reset(reset), .clk(clk), .hsync(hsync), .display_time(display_time));
-
-pixelcontroller PixelController_INSTANCE(.reset(reset), .clk(clk),
-  .display_time(display_time), .red(red), .green(green), .blue(blue));
+vgacontroller VGAcontroller_INSTANCE(.resetbutton(reset), .clk(clk), .VGA_HSYNC(hsync),
+                                     .VGA_RED(red), .VGA_GREEN(green), .VGA_BLUE(blue));
 
 initial
 begin
