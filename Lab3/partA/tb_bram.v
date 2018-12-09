@@ -1,19 +1,37 @@
 `timescale 1ns / 10ps
 
+/* Axelou Olympia
+ * oaxelou@uth.gr
+ * 2161
+ *
+ * ce430
+ * Project3: VGA Controller
+ *
+ * Part A: VRAM Implementation
+ *
+ *
+ * tb_bram: testbench for the VRAM
+ *
+ * Testing:
+ *    -> Sets the address, waits 1 cycle and then it checks
+ *       if the RGB color is the one we expected.
+ *       In this case, it also prints at the beginning of the
+ *       sentence in display: "[OK]"
+ *
+ */
+
 module tb_bram;
 
 reg clk, reset;
-
-reg red_input, green_input, blue_input, en, wen;
+reg en;
 reg [13:0] address;
 
 wire red_output, green_output, blue_output;
 
 initial begin
-  clk = 1'b0;
+  clk = 1'b1;
   reset = 1'b0;
   en = 1'b1;
-  wen = 1'b0;
   #20 reset = 1'b1;
   #40 reset = 1'b0;
   #1000;
@@ -104,7 +122,7 @@ initial begin
 
   address = 14'b00101111111111;
   #20;
-  if(red_output == 1'b0 && green_output == 1'b0 && blue_output == 1'b0)
+  if(red_output == 1'b1 && green_output == 1'b1 && blue_output == 1'b1)
   $display("[OK] address = %d: R: %b | G: %b | B: %b", address, red_output, green_output, blue_output);
   else
   $display("address = %d: R: %b | G: %b | B: %b", address, red_output, green_output, blue_output);
@@ -188,21 +206,11 @@ initial begin
   else
   $display("address = %d: R: %b | G: %b | B: %b", address, red_output, green_output, blue_output);
   #1000;
-
-  // red_input = 1'b1;
-  // green_input = 1'b1;
-  // blue_input = 1'b0;
-
-  // wen = 1'b1;
-  // en = 1'b1;
-  // #1000 en = 1'b0;
-  // wen = 1'b0;
 end
 
 always #10 clk = ~clk;
 
-bram redBram_INSTANCE(.clk(clk), .reset(reset), .en(en), .wen(wen), .red_input(red_input),
-                      .green_input(green_input), .blue_input(blue_input), .address(address),
+bram Bram_INSTANCE(.clk(clk), .reset(reset), .en(en), .address(address),
                       .red_output(red_output), .green_output(green_output), .blue_output(blue_output));
 
 endmodule
