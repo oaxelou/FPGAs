@@ -1,8 +1,24 @@
+/* Axelou Olympia
+ * oaxelou@uth.gr
+ * 2161
+ *
+ * ce430
+ * Project3: VGA Controller
+ *
+ * Part C: VSYNC Implementation + Vertical Pixel Counter
+ *
+ * TOP LEVEL MODULE
+ * vgacontroller: Top Level Module. Includes the instantiation of
+ *                , vsynchronizerhsynchronizer and pixelcontroller
+ *
+ * input : resetbutton, clk
+ * output: VGA_RED, VGA_GREEN, VGA_BLUE, VGA_HSYNC, VGA_VSYNC
+ */
+
 module vgacontroller(resetbutton, clk, VGA_RED, VGA_GREEN, VGA_BLUE, VGA_HSYNC, VGA_VSYNC);
 input resetbutton, clk;
 output VGA_RED, VGA_GREEN, VGA_BLUE, VGA_HSYNC, VGA_VSYNC;
 
-wire hsync, display_time, hsync_time;
 wire [6:0] vert_counter;
 
 vsynchronizer vsync_INSTANCE(.reset(resetbutton), .clk(clk), .vsync(VGA_VSYNC),

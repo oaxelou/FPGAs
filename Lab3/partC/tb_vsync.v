@@ -1,9 +1,27 @@
 `timescale 1ns / 10ps
 
-module tb_hsync;
+/* Axelou Olympia
+ * oaxelou@uth.gr
+ * 2161
+ *
+ * ce430
+ * Project3: VGA Controller
+ *
+ * Part C: VSYNC Implementation + Vertical Pixel Counter
+ *
+ *
+ * tb_vsync: Testbench of vsync. Includes the instantiation of the top level module.
+ *
+ *
+ * Testing:
+ *    -> Sets the clock and resets the circuit. The testing is done by
+ *       observing the waveforms.
+ *
+ */
+
+module tb_vsync;
 
 reg reset, clk;
-
 wire hsync, vsync, red, green, blue;
 
 vgacontroller VGAcontroller_INSTANCE(.resetbutton(reset), .clk(clk),
