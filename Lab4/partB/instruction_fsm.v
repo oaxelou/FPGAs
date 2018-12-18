@@ -1,8 +1,8 @@
 /* The instruction fsm
  *
- * I implemented it as Mealy FSM 
+ * I implemented it as Mealy FSM
  *
- *
+ * TSEKARE AN PREPEI OI TIMES CHECKPOINT TOU COUNTER NA EINAI MEIWMENES KATA 1
  */
 
 module instruction_fsm(clk, reset, instr_fsm_enable, e, instr_fsm_done, upper);
