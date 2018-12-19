@@ -15,6 +15,9 @@ output reg [9:0] instruction;
 reg [4:0] current_state;
 reg [4:0] next_state;
 reg [25:0] counter;    // 26 digits to display 50,000,000
+reg [10:0] address;
+
+wire [7:0] output_char;
 
 parameter state_wait_4_init = 5'b00000,  /*  write  data  */
           state_set_aDDr_00 = 5'b01110,
@@ -24,6 +27,8 @@ parameter state_wait_4_init = 5'b00000,  /*  write  data  */
           state_wait_1sec   = 5'b10010,
           state_set_aDDr_4F = 5'b10011,
           state_write_bit   = 5'b10100;
+
+bram bram_inst(.clk(clk), .reset(reset), .address(address), .output_char(output_char));
 
 always @ (posedge clk or posedge reset)
 begin
@@ -43,10 +48,12 @@ end
 
 always @ (current_state or counter or instr_fsm_done)
 begin
+
 	case(current_state)
     // **************************  WRITE DATA  ****************************** //
     state_wait_4_init:
     begin
+      address = 'b0;
       instruction = 10'b00_0000_0000;  // don't care
       instr_fsm_enable = 1'b0;         // don't care
       if(counter == 1)
@@ -57,6 +64,7 @@ begin
 
     state_set_aDDr_00:
     begin
+      address = 'b0;
       instruction = 10'b00_1000_0000;  // Set DDRAM address to 00 (top left corner)
       instr_fsm_enable = 1'b1;
 			if(instr_fsm_done)
@@ -70,12 +78,16 @@ begin
 
 		state_write_top:
 		begin
-      instruction = 10'b10_0100_0001;  // Write character 'A'
-			instr_fsm_enable = 1'b1;
+      instruction = {2'b10, output_char};
+      //instruction = 10'b10_0100_0001;  // Write character 'A'
+      address = counter - 'b10; // dhladh address = 0 thn prwth fora
+
+      instr_fsm_enable = 1'b1;
 			if(instr_fsm_done)
       begin
         instr_fsm_enable = 1'b0;
-				next_state = state_set_aDDr_40;
+        if(address == 16)
+				    next_state = state_set_aDDr_40;
       end
 			else
 				next_state = state_write_top;
@@ -83,6 +95,7 @@ begin
 
 		state_set_aDDr_40:
 		begin
+      address = 16;
       instruction = 10'b00_1100_0000;  // Set DDRAM address to 40 (bottom left corner)
       instr_fsm_enable = 1'b1;
       if(instr_fsm_done)
@@ -96,12 +109,15 @@ begin
 
 		state_write_bottom:
 		begin
-      instruction = 10'b10_0110_0001;  // Write character 'a'
+      instruction = {2'b10, output_char};
+      //instruction = 10'b10_0110_0001;  // Write character 'a'
+      address = counter - 'b11;
 			instr_fsm_enable = 1'b1;
 			if(instr_fsm_done)
       begin
         instr_fsm_enable = 1'b0;
-				next_state = state_wait_1sec;
+        if(address == 32)
+				    next_state = state_wait_1sec;
       end
 			else
 				next_state = state_write_bottom;
@@ -111,7 +127,7 @@ begin
     begin
       instruction = 10'b00_0000_0000;  // Don't care
       instr_fsm_enable = 1'b0;
-      if(counter == 'b10_1111_1010_1111_0000_1000_0101)    // decimal: (50,000,000 + 6)-1
+      if(counter == 'b10_0100_1100_0100_1011_0110_0100)    // decimal: (50,000,000 + 5 + 32)-1
         next_state = state_set_aDDr_4F;
       else
         next_state = state_wait_1sec;
