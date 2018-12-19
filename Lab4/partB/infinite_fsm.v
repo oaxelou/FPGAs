@@ -2,9 +2,6 @@
  *
  * I implemented it as Mealy FSM
  *
- * FTIAKSE TI TIMES TWN STATES
- *
- * MPORW NA RUTHMISW SE POIO MEROS THS MNHMHS THA PAEI NA DIAVASEI ME TON COUNTER
  */
 
 module infinite_fsm(clk, reset, init_done, instr_fsm_done, instr_fsm_enable, instruction);
@@ -12,21 +9,24 @@ input clk, reset, init_done, instr_fsm_done;
 output reg instr_fsm_enable;
 output reg [9:0] instruction;
 
-reg [4:0] current_state;
-reg [4:0] next_state;
-reg [25:0] counter;    // 26 digits to display 50,000,000
+reg [3:0] current_state;
+reg [3:0] next_state;
+reg [26:0] counter;    // 26 digits to display 50,000,000
 reg [10:0] address;
 
 wire [7:0] output_char;
 
-parameter state_wait_4_init = 5'b00000,  /*  write  data  */
-          state_set_aDDr_00 = 5'b01110,
-          state_write_top   = 5'b01111,
-          state_set_aDDr_40 = 5'b10000,
-          state_write_bottom= 5'b10001,
-          state_wait_1sec   = 5'b10010,
-          state_set_aDDr_4F = 5'b10011,
-          state_write_bit   = 5'b10100;
+parameter state_wait_4_init  = 4'b0000, //  0
+          state_set_aDDr_00  = 4'b0001, //  1
+          state_write_top    = 4'b0010, //  2
+          state_set_aDDr_40  = 4'b0011, //  3
+          state_write_bottom = 4'b0100, //  4
+          state_wait_1s_1    = 4'b0101, //  5
+          state_set_aDDr_4F  = 4'b0110, //  6
+          state_write_cursor = 4'b0111, //  7
+          state_wait_1s_2    = 4'b1000, //  8
+          state_set_aDDr_4F_2= 4'b1001, //  9
+          state_write_blank  = 4'b1010; // 10
 
 bram bram_inst(.clk(clk), .reset(reset), .address(address), .output_char(output_char));
 
@@ -41,12 +41,15 @@ begin
 	begin
 		current_state <= next_state;
 		if(~instr_fsm_enable & init_done)
-			counter <= counter + 1;
+      if(counter == 100000038)
+        counter <= 35;
+      else
+			   counter <= counter + 1;
 	end
 end
 
 
-always @ (current_state or counter or instr_fsm_done)
+always @ (current_state or counter or instr_fsm_done or output_char)
 begin
 
 	case(current_state)
@@ -80,14 +83,16 @@ begin
 		begin
       instruction = {2'b10, output_char};
       //instruction = 10'b10_0100_0001;  // Write character 'A'
-      address = counter - 'b10; // dhladh address = 0 thn prwth fora
+      address = counter - 'b11; // dhladh address = 0 thn prwth fora
 
       instr_fsm_enable = 1'b1;
 			if(instr_fsm_done)
       begin
         instr_fsm_enable = 1'b0;
-        if(address == 16)
-				    next_state = state_set_aDDr_40;
+        if(address == 15)
+				  next_state = state_set_aDDr_40;
+        else
+          next_state = state_write_top;
       end
 			else
 				next_state = state_write_top;
@@ -111,59 +116,106 @@ begin
 		begin
       instruction = {2'b10, output_char};
       //instruction = 10'b10_0110_0001;  // Write character 'a'
-      address = counter - 'b11;
+      address = counter - 'b100;
 			instr_fsm_enable = 1'b1;
 			if(instr_fsm_done)
       begin
         instr_fsm_enable = 1'b0;
-        if(address == 32)
-				    next_state = state_wait_1sec;
+        if(address == 31)
+				    next_state = state_wait_1s_1;
+        else
+          next_state = state_write_bottom;
       end
 			else
 				next_state = state_write_bottom;
 		end
 
-    state_wait_1sec:
+    // ****************** THE INFINITE LOOP ********************************* //
+
+    state_wait_1s_1:
     begin
+      address = 'b0;
       instruction = 10'b00_0000_0000;  // Don't care
       instr_fsm_enable = 1'b0;
-      if(counter == 'b10_0100_1100_0100_1011_0110_0100)    // decimal: (50,000,000 + 5 + 32)-1
+      if(counter == 50000035) //'b10_0100_1100_0100_1011_1010_0100)    // decimal: (50,000,000 + 36)-1
         next_state = state_set_aDDr_4F;
       else
-        next_state = state_wait_1sec;
+        next_state = state_wait_1s_1;
     end
 
     state_set_aDDr_4F:
 		begin
+      address = 'b0;
       instruction = 10'b00_1100_1111;  // Set DDRAM address to 4F (bottom right corner)
       instr_fsm_enable = 1'b1;
 			if(instr_fsm_done)
       begin
         instr_fsm_enable = 1'b0;
-				next_state = state_write_bit;
+				next_state = state_write_cursor;
       end
 			else
 				next_state = state_set_aDDr_4F;
 		end
 
-    state_write_bit:
+    state_write_cursor:
     begin
+      address = 'b0;
       instruction = 10'b10_1111_1111;  // Write cursor character
       instr_fsm_enable = 1'b1;
       if(instr_fsm_done)
       begin
         instr_fsm_enable = 1'b0;
-        next_state = 5'bXXXXX;
+        next_state = state_wait_1s_2;
       end
       else
-        next_state = state_write_bit;
+        next_state = state_write_cursor;
+    end
+
+    state_wait_1s_2:
+    begin
+      address = 'b0;
+      instruction = 10'b00_0000_0000;  // Don't care
+      instr_fsm_enable = 1'b0;
+      if(counter == 100000037) //'b10_0100_1100_0100_1011_1010_0100)    // decimal: (100,000,000 + 38)-1
+        next_state = state_set_aDDr_4F_2;
+      else
+        next_state = state_wait_1s_2;
+    end
+
+    state_set_aDDr_4F_2:
+    begin
+      address = 'b0;
+      instruction = 10'b00_1100_1111;  // Set DDRAM address to 4F (bottom right corner)
+      instr_fsm_enable = 1'b1;
+      if(instr_fsm_done)
+      begin
+        instr_fsm_enable = 1'b0;
+        next_state = state_write_blank;
+      end
+      else
+        next_state = state_set_aDDr_4F_2;
+    end
+
+    state_write_blank:
+    begin
+      address = 'b0;
+      instruction = 10'b10_0010_0000;  // Write blank space character
+      instr_fsm_enable = 1'b1;
+      if(instr_fsm_done)
+      begin
+        instr_fsm_enable = 1'b0;
+        next_state = state_wait_1s_1;
+      end
+      else
+        next_state = state_write_blank;
     end
 
 		default:
 		begin // it will never get in here
+      address = 11'bXXX_XXXX_XXXX;
       instruction = 10'bXX_XXXX_XXXX;
       instr_fsm_enable = 1'b0;
-			next_state = 5'bXXXXX;
+			next_state = 4'bXXXX;
 		end
 	endcase
 end
