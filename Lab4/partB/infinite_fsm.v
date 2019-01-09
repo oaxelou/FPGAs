@@ -4,17 +4,17 @@
  *
  */
 
-module infinite_fsm(clk, reset, init_done, instr_fsm_done, instr_fsm_enable, instruction);
+module infinite_fsm(clk, reset, init_done, instr_fsm_done, instr_fsm_enable, instruction, address, output_char);
 input clk, reset, init_done, instr_fsm_done;
+input [7:0] output_char;
 output reg instr_fsm_enable;
 output reg [9:0] instruction;
+output reg [10:0] address;
 
 reg [3:0] current_state;
 reg [3:0] next_state;
 reg [26:0] counter;    // 26 digits to display 50,000,000
-reg [10:0] address;
 
-wire [7:0] output_char;
 
 parameter state_wait_4_init  = 4'b0000, //  0
           state_set_aDDr_00  = 4'b0001, //  1
@@ -28,7 +28,6 @@ parameter state_wait_4_init  = 4'b0000, //  0
           state_set_aDDr_4F_2= 4'b1001, //  9
           state_write_blank  = 4'b1010; // 10
 
-bram bram_inst(.clk(clk), .reset(reset), .address(address), .output_char(output_char));
 
 always @ (posedge clk or posedge reset)
 begin
@@ -41,7 +40,7 @@ begin
 	begin
 		current_state <= next_state;
 		if(~instr_fsm_enable & init_done)
-      if(counter == 100000038)
+      if(counter == 'd100000038)
         counter <= 35;
       else
 			   counter <= counter + 1;
@@ -137,7 +136,7 @@ begin
       address = 'b0;
       instruction = 10'b00_0000_0000;  // Don't care
       instr_fsm_enable = 1'b0;
-      if(counter == 50000035) //'b10_0100_1100_0100_1011_1010_0100)    // decimal: (50,000,000 + 36)-1
+      if(counter == 'd50000035) //'b10_0100_1100_0100_1011_1010_0100)    // decimal: (50,000,000 + 36)-1
         next_state = state_set_aDDr_4F;
       else
         next_state = state_wait_1s_1;
@@ -176,7 +175,7 @@ begin
       address = 'b0;
       instruction = 10'b00_0000_0000;  // Don't care
       instr_fsm_enable = 1'b0;
-      if(counter == 100000037) //'b10_0100_1100_0100_1011_1010_0100)    // decimal: (100,000,000 + 38)-1
+      if(counter == 'd100000037) //'b10_0100_1100_0100_1011_1010_0100)    // decimal: (100,000,000 + 38)-1
         next_state = state_set_aDDr_4F_2;
       else
         next_state = state_wait_1s_2;

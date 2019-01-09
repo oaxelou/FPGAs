@@ -1,5 +1,5 @@
 NET clk   LOC = C9; # | IOSTANDARD = LVCMOS33 ;         # page 23
-NET reset LOC = K17 # | IOSTANDARD = LVTTL | PULLDOWN ; # page 17
+NET reset LOC = D18; # | IOSTANDARD = LVTTL | PULLDOWN ; # page 17
 
 # page 43
 NET LCD_E  LOC = M18; # | IOSTANDARD = LVCMOS33 | DRIVE = 4 | SLEW = SLOW ;
@@ -10,6 +10,9 @@ NET SF_D<3>  LOC = M15; # | IOSTANDARD = LVCMOS33 | DRIVE = 4 | SLEW = SLOW ;
 NET SF_D<2>  LOC = P17; # | IOSTANDARD = LVCMOS33 | DRIVE = 4 | SLEW = SLOW ;
 NET SF_D<1>  LOC = R16; # | IOSTANDARD = LVCMOS33 | DRIVE = 4 | SLEW = SLOW ;
 NET SF_D<0>  LOC = R15; # | IOSTANDARD = LVCMOS33 | DRIVE = 4 | SLEW = SLOW ;
+
+
+#NET    #sel. 105 
 
 NET "clk" TNM_NET = "clk";
 TIMESPEC "TS_clk" = PERIOD "clk" 20.0ns HIGH 50%;

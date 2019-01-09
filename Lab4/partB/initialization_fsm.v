@@ -29,13 +29,14 @@ parameter state_wait_15ms   = 4'b0000,  /* initialization */
           state_display_on  = 4'b1011,
           state_clear_displ = 4'b1100,
           state_wait_1_64ms = 4'b1101,
-          state_done        = 4'b1110;
+          state_done        = 4'b1110,
+          state_reset       = 4'b1111;
 
 always @ (posedge clk or posedge reset)
 begin
 	if(reset)
 	begin
-		current_state <= state_wait_15ms;
+		current_state <= state_reset;
 		counter <= 'b0;
 	end
 	else
@@ -51,6 +52,21 @@ always @ (current_state or counter or instr_fsm_done)
 begin
   init_done = 1'b0;
 	case(current_state)
+
+    state_reset:
+    begin
+     e = 1'b0;
+     instruction = 10'b00_0000_0001;   // Clear Display, 0x01
+     instr_fsm_enable = 1'b1;
+     if(instr_fsm_done)
+      begin
+        instr_fsm_enable = 1'b0;
+        next_state = state_wait_15ms;
+      end
+     else
+       next_state = state_reset;
+    end
+
     // **************************  INITIALIZATION ***************************//
 		state_wait_15ms:
 		begin

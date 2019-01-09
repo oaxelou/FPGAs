@@ -28,6 +28,14 @@ module tb_LCD_controller;
 		#100 reset = 1;
 		#100 reset = 0;
 
+		#100000000 reset = 1;
+		#100000 reset = 0;
+
+		#100000000 reset = 1;
+		#100000 reset = 0;
+
+		#100000000 reset = 1;
+		#100000 reset = 0;
 	end
 
 	always #10 clk = ~clk;

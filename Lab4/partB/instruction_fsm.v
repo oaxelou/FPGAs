@@ -86,7 +86,7 @@ begin
 		begin
 			e = 1'b0;
 			instr_fsm_done = 1'b0;
-			if(counter == 'b0100_0001)               // decimal: 65
+			if(counter == 'd62)//'b0100_0001)               // decimal: 65 - 3
 				next_state = state_setup_lower;
 			else
 				next_state = state_wait_interm;
@@ -96,7 +96,7 @@ begin
 		begin
 			e = 1'b0;
 			instr_fsm_done = 1'b0;
-			if(counter == 'b100_0011)               // decimal:  67
+			if(counter == 'd64)// 'b100_0011)               // decimal:  67 - 3
 				next_state = state_data_lower;
 			else
 				next_state = state_setup_lower;
@@ -106,7 +106,7 @@ begin
 		begin
 			e = 1'b1;
 			instr_fsm_done = 1'b0;
-			if(counter == 'b0100_1111)             // decimal: 79
+			if(counter == 'd76)// 'b0100_1111)             // decimal: 79 - 3
 				next_state = state_hold_lower;
 			else
 				next_state = state_data_lower;
@@ -116,7 +116,7 @@ begin
 		begin
 			e = 1'b0;
 			instr_fsm_done = 1'b0;
-			if(counter == 'b0101_0000)            // decimal: 80
+			if(counter == 'd77)//'b0101_0000)            // decimal: 80 - 3
 				next_state = state_done;
 			else
 				next_state = state_hold_lower;
@@ -125,7 +125,7 @@ begin
 		state_done:
 		begin
 			e = 1'b0;
-			if(counter == 'b1000_0010_0000)      // decimal: 2080
+			if(counter == 'd2077)// 'b1000_0010_0000)      // decimal: 2080 - 3
 			begin
 				next_state = state_setup_upper;
 				instr_fsm_done = 1'b1;
